@@ -96,8 +96,8 @@ export default function StudyPage() {
               <thead>
                 <tr className="border-b-2 border-blue-500">
                   <th className="text-left py-4 px-4 text-blue-600 font-bold">#</th>
-                  <th className="text-left py-4 px-4 text-blue-600 font-bold">Hébreu</th>
                   <th className="text-left py-4 px-4 text-blue-600 font-bold">Français</th>
+                  <th className="text-right py-4 px-4 text-blue-600 font-bold">Hébreu</th>
                   <th className="text-left py-4 px-4 text-blue-600 font-bold">Type</th>
                 </tr>
               </thead>
@@ -105,8 +105,10 @@ export default function StudyPage() {
                 {allWords.map((word, index) => (
                   <tr key={word.id} className="border-b border-gray-200 hover:bg-blue-50">
                     <td className="py-4 px-4 text-gray-600 font-semibold">{index + 1}</td>
-                    <td className="py-4 px-4 text-lg text-gray-800 font-semibold">{word.hebrew}</td>
                     <td className="py-4 px-4 text-gray-700">{word.french}</td>
+                    <td className="py-4 px-4 text-lg text-gray-800 font-semibold text-right" dir="rtl">
+                      {word.hebrew}
+                    </td>
                     <td className="py-4 px-4">
                       {word.id.startsWith('custom-') ? (
                         <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">
