@@ -7,6 +7,8 @@ import { vocabularyLists } from '@/app/utils/vocabularyData';
 import { getAllVocabularyLists } from '@/app/utils/customLists';
 import HebrewKeyboard from '@/components/HebrewKeyboard';
 
+export const dynamic = 'force-dynamic';
+
 interface TestQuestion {
   wordId: string;
   word: string;

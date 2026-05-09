@@ -4,6 +4,8 @@ import { useParams, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { grammarLessons } from '@/app/utils/grammarData';
 
+export const dynamic = 'force-dynamic';
+
 // Fonction pour parser et rendre le Markdown basique
 const renderMarkdownContent = (text: string) => {
   return text.split('\n').map((line, index) => {
