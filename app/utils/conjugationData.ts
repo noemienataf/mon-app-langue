@@ -284,56 +284,50 @@ export const conjugationLessons: ConjugationLesson[] = [
   {
     id: 'binyanim',
     title: 'Les Binyanim (Structures verbales)',
-    description: 'Comprendre les différentes structures de verbes en hébreu',
-    explanation: "Les binyanim (binyan = structure/forme) sont des modèles de conjugaison qui donnent au verbe différentes nuances de sens.\n\n**Les 7 binyanim principaux**:\n1. **Kal** (simple): La forme la plus basique. Exemple: דברו (parler)\n2. **Nifal** (passif simple): Forme passive ou réfléchie. Exemple: נשמר (être gardé)\n3. **Piel** (intensif): Renforce ou répète l'action. Exemple: דרך (écraser vs. presser)\n4. **Pual** (passif piel): Passif du piel. Exemple: מדוד (être mesuré)\n5. **Hifil** (causatif): \"Faire faire\" quelque chose. Exemple: השמיע (faire écouter)\n6. **Hofal** (passif hifil): Passif du hifil. Exemple: השמד (être fait connaître)\n7. **Hitpael** (réfléchi): Réfléchi ou réciprocal. Exemple: התדברו (se parler)\n\nChaque binyan change le sens et le comportement du verbe.",
+    description: 'Les 7 moules de conjugaison qui créent différents sens à partir d\'une même racine',
+    explanation: "**Le concept fondamental**: En hébreu, presque tous les verbes sont construits sur une racine de 3 lettres consonnes. Cette racine porte le sens général, et on l'\"habille\" dans différents moules (binyanim) pour créer différents verbes avec des nuances de sens.\n\nExemple avec ל-מ-ד (l-m-d = apprendre):\n- **לָמַד** (lamad) = il a appris\n- **לִמֵּד** (limed) = il a enseigné (= fait apprendre)\n- **הִתְלַמֵּד** (hitlamed) = il a fait un apprentissage / s'est formé\n\n**Les binyanim vont par paires actif/passif**: Pa'al↔Nif'al, Pi'el↔Pu'al, Hif'il↔Huf'al. Hitpa'el est à part (réflexif).\n\n**Reconnaissance rapide** - Tu peux identifier un binyan juste en regardant les préfixes/voyelles:\n- **Voyelles a-a, aucun préfixe** = Pa'al (passé)\n- **Préfixe נ־** = Nif'al\n- **Voyelles i-e + dagesh au milieu** = Pi'el\n- **Voyelles u-a** = Pu'al\n- **Préfixe הִ + voyelle i** = Hif'il\n- **Préfixe הֻ** = Huf'al\n- **Préfixe הִתְ / מִתְ / לְהִתְ** = Hitpa'el",
     examples: [
       {
-        person: 'Kal (simple)',
-        hebrew: 'שמר',
-        transliteration: 'shamar',
-        french: 'Garder'
+        person: '1. Pa\'al (Qal) - ACTIF SIMPLE',
+        hebrew: 'כָּתַב (katav) - il a écrit',
+        transliteration: 'Signature: voyelles a-a au passé, forme la plus basique',
+        french: 'Autres: לָמַד (lamad = apprendre), אָכַל (akhal = manger), יָשַׁב (yashav = s\'asseoir)'
       },
       {
-        person: 'Nifal (passif)',
-        hebrew: 'נשמר',
-        transliteration: 'nishmar',
-        french: 'Être gardé/Se garder'
+        person: '2. Nif\'al - PASSIF/RÉFLEXIF du Pa\'al',
+        hebrew: 'נִכְתַּב (nikhtav) - il a été écrit',
+        transliteration: 'Signature: préfixe ni- au passé, préfixe hi- à l\'infinitif',
+        french: 'Autres: נִכְנַס (nikhnas = entrer), נִפְגַּש (nifgash = se rencontrer), נִשְׁבַּר (nishbar = se casser)'
       },
       {
-        person: 'Piel (intensif)',
-        hebrew: 'שימר',
-        transliteration: 'shimer',
-        french: 'Préserver (intensif)'
+        person: '3. Pi\'el - ACTIF INTENSIF',
+        hebrew: 'כִּתֵּב (kitve) - il a dicté (action intensive)',
+        transliteration: 'Signature: dagesh (point) dans la 2ème lettre, voyelles i-e au passé',
+        french: 'Autres: דִּבֵּר (diber = parler), לִמֵּד (limed = enseigner), בִּקֵּש (bikesh = demander), סִפֵּר (siper = raconter)'
       },
       {
-        person: 'Hifil (causatif)',
-        hebrew: 'השמיר',
-        transliteration: 'hishmír',
-        french: 'Faire garder/Confier'
+        person: '4. Pu\'al - PASSIF du Pi\'el (RARE à l\'oral)',
+        hebrew: 'כֻּתַּב (kutav) - il a été dicté',
+        transliteration: 'Signature: voyelles u-a. Surtout au présent et passé, pas d\'infinitif',
+        french: 'Exemple: דֻּבַּר (dubar = on a parlé de lui)'
       },
       {
-        person: 'Hitpael (réfléchi)',
-        hebrew: 'השתמר',
-        transliteration: 'hishtamar',
-        french: 'Se garder/Faire attention'
+        person: '5. Hif\'il - CAUSATIF (\"faire faire\")',
+        hebrew: 'הִכְתִּיב (hikhtiv) - il a dicté (= fait écrire)',
+        transliteration: 'Signature: préfixe הִ (hi-) au passé, voyelle i entre 2ème et 3ème lettre',
+        french: 'Autres: הִכְנִיס (hikhnis = faire entrer), הִלְבִּישׁ (hilbish = habiller = faire porter), הִרְגִּישׁ (hirgish = ressentir)'
       },
       {
-        person: 'Exemple: Kal',
-        hebrew: 'קרא (lire)',
-        transliteration: 'kara',
-        french: 'Lire'
+        person: '6. Huf\'al - PASSIF du Hif\'il',
+        hebrew: 'הֻכְתַּב (hukhtav) - il a été dicté',
+        transliteration: 'Signature: préfixe הֻ (hu-), voyelle a. Rare à l\'oral moderne',
+        french: 'Exemple: הֻסְבַּר (husbar = il a été expliqué)'
       },
       {
-        person: 'Exemple: Nifal',
-        hebrew: 'נקרא (être appelé)',
-        transliteration: 'nikra',
-        french: 'Être appelé'
-      },
-      {
-        person: 'Exemple: Piel',
-        hebrew: 'קירא (lire régulièrement)',
-        transliteration: 'kira',
-        french: 'Lire (régulièrement/répétition)'
+        person: '7. Hitpa\'el - RÉFLEXIF / RÉCIPROCAL',
+        hebrew: 'הִתְכַּתֵּב (hitkatev) - il a correspondu (s\'est écrit)',
+        transliteration: 'Signature: préfixe הִתְ (hit-). Peut aussi être מִתְ au présent ou לְהִתְ à l\'infinitif',
+        french: 'Autres: הִתְלַבֵּשׁ (hitlabesh = s\'habiller), הִתְרַחֵץ (hitrahets = se laver), הִתְרַגֵּשׁ (hitragesh = s\'émouvoir)'
       }
     ],
     exercises: [
@@ -369,57 +363,57 @@ export const conjugationLessons: ConjugationLesson[] = [
   },
   {
     id: 'verb-groups',
-    title: 'Groupes de Verbes',
-    description: 'Connaître les différentes catégories de verbes en hébreu',
-    explanation: "En hébreu, les verbes sont classifiés en groupes selon le type de racine et les lettres qu'ils contiennent.\n\n**Groupes de verbes**:\n1. **Verbes réguliers (Sholem)**: Trois racines consonantiques régulières. Exemple: שמר (garder)\n2. **Verbes avec gutturales (Guttural)**: Contiennent ה, ע, ח, ר. Ces lettres changent les voyelles. Exemple: עזר (aider)\n3. **Verbes faibles (Weak)**: Contiennent י, ו, נ. Changent ou disparaissent. Exemple: יהב (donner)\n4. **Verbes doublés (Doubled)**: Deux racines identiques. Exemple: סבב (tourner)\n5. **Verbes géminés**: Les deux dernières consonnes sont identiques. Exemple: קרר (refroidir)\n\nComprendre le groupe aide à anticiper les modifications de conjugaison.",
+    title: 'Groupes de Verbes (Gizra)',
+    description: 'Classification des verbes selon leur racine - comprendre comment cela affecte la conjugaison',
+    explanation: "**Gizra** (גִּזְרָה = groupe/classification) - Les verbes sont classifiés selon le type de lettres dans leur racine.\n\n**Importance**: Certaines lettres \"faibles\" (י, ו, נ) ou \"gutturales\" (ה, ע, ח, ר) changent les voyelles ou se comportent différemment en conjugaison. Comprendre le groupe d'un verbe aide à prévoir ses modifications.\n\n**Les principaux groupes**:\n\n1. **Verbes réguliers (Sholem/Shaleim)** - Trois consonnes \"fortes\"\n   - Pas de modifications en conjugaison\n   - Exemple: שׁמר (shamar = garder), דבר (davar = parler), קטל (katal = tuer)\n\n2. **Verbes avec gutturales** - Contiennent ה, ע, ח, ר\n   - Ces lettres \"mangent\" les voyelles muettes ou les changent\n   - Exemple: עזר (azar = aider), שׁאל (shaal = demander), רחץ (rahatz = laver)\n   - Changement typique: les voyelles seront légèrement modifiées\n\n3. **Verbes faibles (אָ, י, ו, נ)** - Une des lettres se transforme ou disparaît\n   - **אָ-faibles**: נתן (natan = donner) - le alef disparaît en conjugaison\n   - **י-faibles**: יתר (yatar = rester) - le yud peut se transformer\n   - **ו-faibles**: ובד (vad = travailler) - le vav peut disparaître\n   - **נ-faibles**: נשׁר (nashar = tomber) - le nun peut se transformer\n   - Changement typique: la lettre faible change d'aspect selon le temps\n\n4. **Verbes doublés (Gemination)** - Deux racines identiques (P=L)\n   - Exemple: סבב (savav = tourner), לקק (lakak = lécher), קלל (kalal = maudire)\n   - Changement typique: au présent et futur, la lettre peut se diviser ou se transformer\n\n5. **Verbes très faibles** - Plusieurs lettres faibles ou combinaisons complexes\n   - Exemple: בוא (bo = venir), יאכל (ya'akhal = manger avec א et י)\n   - Changements importants selon le binyan et le temps",
     examples: [
       {
-        person: 'Régulier',
-        hebrew: 'שמר',
-        transliteration: 'shamar',
-        french: 'Garder'
+        person: 'RÉGULIER - שׁמר',
+        hebrew: 'Passé: שׁמרתי (shamarti = j\'ai gardé)',
+        transliteration: 'Présent: שׁומר (shomer = gardien)',
+        french: 'Futur: אשׁמור (ashmor = je garderai) - formes régulières'
       },
       {
-        person: 'Avec guttural',
-        hebrew: 'עזר',
-        transliteration: 'azar',
-        french: 'Aider'
+        person: 'RÉGULIER - דבר',
+        hebrew: 'Passé: דברתי (dabarti = j\'ai parlé)',
+        transliteration: 'Présent: מדבר (medaber = parleur)',
+        french: 'Futur: אדבור (adabor = je parlerai) - conjugaison normale'
       },
       {
-        person: 'Faible (י)',
-        hebrew: 'יתר',
-        transliteration: 'yatar',
-        french: 'Dépasser'
+        person: 'GUTTURALE - עזר',
+        hebrew: 'Passé: עזרתי (azarti = j\'ai aidé)',
+        transliteration: 'Présent: עוזר (ozer = aidant)',
+        french: 'Les voyelles changent légèrement par rapport aux réguliers'
       },
       {
-        person: 'Faible (ו)',
-        hebrew: 'ובד',
-        transliteration: 'vad',
-        french: 'Travailler'
+        person: 'GUTTURALE - שׁאל',
+        hebrew: 'Passé: שׁאלתי (shaalti = j\'ai demandé)',
+        transliteration: 'Présent: שׁואל (shoal = demandant)',
+        french: 'Futur: אשׁאל (isha\'al = je demanderai) - voyelles modifiées'
       },
       {
-        person: 'Doublé',
-        hebrew: 'סבב',
-        transliteration: 'savav',
-        french: 'Tourner/Environner'
+        person: 'ALEF-FAIBLE - נתן',
+        hebrew: 'Passé: נתתי (natati = j\'ai donné)',
+        transliteration: 'Présent: נותן (noten = donnant)',
+        french: 'L\'alef disparaît! Au passé il redevient: נ-ת-ן'
       },
       {
-        person: 'Geminé',
-        hebrew: 'קרר',
-        transliteration: 'karar',
-        french: 'Refroidir'
+        person: 'YOD-FAIBLE - יתר',
+        hebrew: 'Passé: יתרתי (yatarti = j\'ai dépassé)',
+        transliteration: 'Présent: יתור (yatur = dépassant)',
+        french: 'Le yod se transforme selon le temps et le binyan'
       },
       {
-        person: 'Exemple changement: אכל',
-        hebrew: 'אכל (manger) → יאכל (il mangera)',
-        transliteration: 'et tu → ye\'ékhel',
-        french: 'Changement pour verbes faibles'
+        person: 'VAV-FAIBLE - בוא (venir)',
+        hebrew: 'Passé: באתי (bati = je suis venu)',
+        transliteration: 'Présent: בא (ba = venant)',
+        french: 'Le vav disparaît presque complètement au futur: אבוא'
       },
       {
-        person: 'Exemple changement: עוד',
-        hebrew: 'עוד (rester) → נשאר (il restera)',
-        transliteration: 'od → nishar',
-        french: 'Verbe avec guttural'
+        person: 'DOUBLÉ - סבב',
+        hebrew: 'Passé: סבבתי (saavti = j\'ai tourné)',
+        transliteration: 'Présent: סובב (sovev = tournant)',
+        french: 'Au présent/futur: סבב → סובב (la lettre se divise avec voyelle entre)'
       }
     ],
     exercises: [
