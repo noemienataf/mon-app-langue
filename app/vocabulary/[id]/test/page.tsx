@@ -14,6 +14,12 @@ interface TestQuestion {
   correct: boolean | null;
 }
 
+interface CustomWord {
+  id: string;
+  hebrew: string;
+  french: string;
+}
+
 export default function TestPage() {
   const params = useParams();
   const searchParams = useSearchParams();
@@ -21,6 +27,7 @@ export default function TestPage() {
   const profile = searchParams.get('profile') || 'User';
 
   const list = vocabularyLists.find(l => l.id === listId);
+  const [customWords, setCustomWords] = useState<CustomWord[]>([]);
   const [questions, setQuestions] = useState<TestQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [userAnswer, setUserAnswer] = useState('');
@@ -29,11 +36,20 @@ export default function TestPage() {
   const [failedWords, setFailedWords] = useState<TestQuestion[]>([]);
   const [replaying, setReplaying] = useState(false);
 
+  // Charger les mots personnalisés
+  useEffect(() => {
+    if (!listId) return;
+    const saved = localStorage.getItem(`custom-words-${listId}`);
+    if (saved) {
+      setCustomWords(JSON.parse(saved));
+    }
+  }, [listId]);
+
   useEffect(() => {
     if (!list) return;
 
-    // Generate 10 random questions
-    const allWords = list.words;
+    // Combiner les mots par défaut et personnalisés
+    const allWords = [...list.words, ...customWords];
     const selectedWords = allWords
       .sort(() => Math.random() - 0.5)
       .slice(0, Math.min(10, allWords.length));
@@ -47,7 +63,7 @@ export default function TestPage() {
     }));
 
     setQuestions(newQuestions);
-  }, [list]);
+  }, [list, customWords]);
 
   if (!list) {
     return (
