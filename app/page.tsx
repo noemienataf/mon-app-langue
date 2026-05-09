@@ -98,8 +98,8 @@ export default function Home() {
   };
 
   const handleAddList = () => {
-    if (newListName.trim() && newListDescription.trim() && selectedProfile) {
-      addCustomList(newListName, newListDescription, selectedProfile.id);
+    if (newListName.trim() && newListDescription.trim()) {
+      addCustomList(newListName, newListDescription);
       setNewListName('');
       setNewListDescription('');
       setShowAddListForm(false);
