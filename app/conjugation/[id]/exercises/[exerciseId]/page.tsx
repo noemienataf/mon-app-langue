@@ -111,7 +111,7 @@ function ConjugationExercisesContent() {
     }
 
     // For regular exercises, slice by setNumber
-    const setNumber = exerciseMeta.setNumber;
+    const setNumber = (exerciseMeta as any).setNumber || 1;
     const startIndex = (setNumber - 1) * 10;
     return allExercises.slice(startIndex, startIndex + 10);
   };
