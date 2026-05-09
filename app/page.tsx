@@ -1,10 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getProfiles, addProfile } from './utils/localStorage';
 import { vocabularyLists } from './utils/vocabularyData';
 import { getCustomLists, addCustomList, deleteCustomList, getAllVocabularyLists } from './utils/customLists';
 import Link from 'next/link';
+
+interface Profile {
+  id: string;
+  name: string;
+}
 
 interface ListWordCount {
   [key: string]: number;
@@ -12,9 +16,9 @@ interface ListWordCount {
 
 export default function Home() {
   const [screen, setScreen] = useState<'profile' | 'category' | 'vocabulary'>('profile');
-  const [selectedProfile, setSelectedProfile] = useState<string>('');
+  const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<'vocabulary' | 'grammar' | 'conjugation' | null>(null);
-  const [profiles, setProfiles] = useState<string[]>([]);
+  const [profiles, setProfiles] = useState<Profile[]>([]);
   const [newProfileName, setNewProfileName] = useState('');
   const [wordCounts, setWordCounts] = useState<ListWordCount>({});
   const [lists, setLists] = useState(vocabularyLists);
@@ -22,21 +26,30 @@ export default function Home() {
   const [newListName, setNewListName] = useState('');
   const [newListDescription, setNewListDescription] = useState('');
   const [masteredVocabLists, setMasteredVocabLists] = useState<Set<string>>(new Set());
+  const [loading, setLoading] = useState(true);
 
+  // Charger les profils depuis Supabase
   useEffect(() => {
-    setProfiles(getProfiles());
+    fetchProfiles();
     loadLists();
-    const saved = localStorage.getItem('mastery-vocabulary');
-    if (saved) {
-      setMasteredVocabLists(new Set(JSON.parse(saved)));
-    }
   }, []);
+
+  const fetchProfiles = async () => {
+    try {
+      const response = await fetch('/api/profiles');
+      const data = await response.json();
+      setProfiles(data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Erreur lors du chargement des profils:', error);
+      setLoading(false);
+    }
+  };
 
   const loadLists = () => {
     const allLists = getAllVocabularyLists(vocabularyLists);
     setLists(allLists);
 
-    // Charger le nombre de mots (par défaut + personnalisés)
     const counts: ListWordCount = {};
     allLists.forEach(list => {
       const defaultCount = list.words.length;
@@ -47,8 +60,18 @@ export default function Home() {
     setWordCounts(counts);
   };
 
-  const handleSelectProfile = (profile: string) => {
+  const handleSelectProfile = async (profile: Profile) => {
     setSelectedProfile(profile);
+
+    // Charger la maîtrise du vocabulaire pour ce profil
+    try {
+      const response = await fetch(`/api/mastery/vocabulary?profileId=${profile.id}`);
+      const masteredLists = await response.json();
+      setMasteredVocabLists(new Set(masteredLists));
+    } catch (error) {
+      console.error('Erreur lors du chargement de la maîtrise:', error);
+    }
+
     setScreen('category');
   };
 
@@ -57,17 +80,26 @@ export default function Home() {
     setScreen('vocabulary');
   };
 
-  const handleAddProfile = () => {
-    if (newProfileName.trim()) {
-      addProfile(newProfileName);
-      setProfiles(getProfiles());
-      setNewProfileName('');
+  const handleAddProfile = async () => {
+    if (newProfileName.trim() && selectedProfile === null) {
+      try {
+        const response = await fetch('/api/profiles', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: newProfileName }),
+        });
+        const newProfile = await response.json();
+        setProfiles([...profiles, newProfile]);
+        setNewProfileName('');
+      } catch (error) {
+        console.error('Erreur lors de la création du profil:', error);
+      }
     }
   };
 
   const handleAddList = () => {
-    if (newListName.trim() && newListDescription.trim()) {
-      addCustomList(newListName, newListDescription);
+    if (newListName.trim() && newListDescription.trim() && selectedProfile) {
+      addCustomList(newListName, newListDescription, selectedProfile.id);
       setNewListName('');
       setNewListDescription('');
       setShowAddListForm(false);
@@ -82,20 +114,46 @@ export default function Home() {
     }
   };
 
-  const toggleVocabMastery = (listId: string, e: React.MouseEvent) => {
+  const toggleVocabMastery = async (listId: string, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
-    const newMastered = new Set(masteredVocabLists);
-    if (newMastered.has(listId)) {
-      newMastered.delete(listId);
-    } else {
-      newMastered.add(listId);
-    }
+    if (!selectedProfile) return;
 
-    setMasteredVocabLists(newMastered);
-    localStorage.setItem('mastery-vocabulary', JSON.stringify(Array.from(newMastered)));
+    const newMastered = new Set(masteredVocabLists);
+
+    try {
+      if (newMastered.has(listId)) {
+        // Retirer de la maîtrise
+        await fetch('/api/mastery/vocabulary', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ profileId: selectedProfile.id, listId }),
+        });
+        newMastered.delete(listId);
+      } else {
+        // Ajouter à la maîtrise
+        await fetch('/api/mastery/vocabulary', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ profileId: selectedProfile.id, listId }),
+        });
+        newMastered.add(listId);
+      }
+
+      setMasteredVocabLists(newMastered);
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour de la maîtrise:', error);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50 flex items-center justify-center">
+        <p className="text-slate-600">Chargement...</p>
+      </div>
+    );
+  }
 
   if (screen === 'profile') {
     return (
@@ -110,11 +168,11 @@ export default function Home() {
             <div className="space-y-3 mb-6">
               {profiles.map(profile => (
                 <button
-                  key={profile}
+                  key={profile.id}
                   onClick={() => handleSelectProfile(profile)}
                   className="w-full bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white font-semibold py-3 rounded-lg transition shadow-md hover:shadow-lg transform hover:scale-105"
                 >
-                  {profile}
+                  {profile.name}
                 </button>
               ))}
             </div>
@@ -155,7 +213,7 @@ export default function Home() {
             ← Changer de profil
           </button>
 
-          <h1 className="text-slate-800 text-4xl font-bold mb-1">Bienvenue, {selectedProfile} !</h1>
+          <h1 className="text-slate-800 text-4xl font-bold mb-1">Bienvenue, {selectedProfile?.name} !</h1>
           <p className="text-slate-600 mb-12 text-lg">Que veux-tu apprendre ?</p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -171,7 +229,7 @@ export default function Home() {
 
             {/* Grammaire */}
             <Link
-              href={`/grammar?profile=${selectedProfile}`}
+              href={`/grammar?profile=${selectedProfile?.id}`}
               className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-md hover:shadow-xl hover:scale-105 transition text-center p-8 border-2 border-blue-200 hover:border-blue-400"
             >
               <div className="text-5xl mb-4">✏️</div>
@@ -181,7 +239,7 @@ export default function Home() {
 
             {/* Conjugaison */}
             <Link
-              href={`/conjugation?profile=${selectedProfile}`}
+              href={`/conjugation?profile=${selectedProfile?.id}`}
               className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl shadow-md hover:shadow-xl hover:scale-105 transition text-center p-8 border-2 border-purple-200 hover:border-purple-400"
             >
               <div className="text-5xl mb-4">🔄</div>
@@ -211,7 +269,7 @@ export default function Home() {
           {lists.map(list => (
             <div key={list.id} className="relative group">
               <Link
-                href={`/vocabulary/${list.id}/study?profile=${selectedProfile}`}
+                href={`/vocabulary/${list.id}/study?profile=${selectedProfile?.id}`}
                 className="bg-white rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition block p-4 pr-12 h-36 flex flex-col border border-emerald-100"
               >
                 <h3 className="text-sm font-bold text-emerald-700 mb-1">{list.name}</h3>
