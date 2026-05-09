@@ -86,7 +86,8 @@ export default function StudyPage() {
 
         <div className="bg-white rounded-lg shadow-lg p-8">
           <h1 className="text-3xl font-bold text-blue-600 mb-2">{list.name}</h1>
-          <p className="text-gray-600 mb-8">{list.description}</p>
+          <p className="text-gray-600 mb-2">{list.description}</p>
+          <p className="text-blue-600 font-semibold mb-8">{allWords.length} mots</p>
 
           <div className="overflow-x-auto">
             <table className="w-full">
