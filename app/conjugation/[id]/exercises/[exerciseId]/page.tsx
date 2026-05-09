@@ -27,7 +27,7 @@ import {
   doubledVerbExercises,
 } from '@/app/utils/conjugationExercisesData';
 import HebrewKeyboard from '@/components/HebrewKeyboard';
-import { useIsMobile } from '@/app/hooks/useIsMobile';
+import { useIsMobile } from '@/hooks/useIsMobile';
 
 interface ConjugationExercise {
   id: string;
