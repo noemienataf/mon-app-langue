@@ -2,9 +2,8 @@
 
 import { useParams, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { useState, useEffect, Suspense } from 'react';
 import { conjugationLessons } from '@/app/utils/conjugationData';
-
-export const dynamic = 'force-dynamic';
 
 // Fonction pour parser et rendre le Markdown basique
 const renderMarkdownContent = (text: string) => {
@@ -29,7 +28,7 @@ const renderMarkdownContent = (text: string) => {
   });
 };
 
-export default function ConjugationLessonPage() {
+function ConjugationLessonContent() {
   const params = useParams();
   const searchParams = useSearchParams();
   const lessonId = params.id as string;
@@ -100,14 +99,42 @@ export default function ConjugationLessonPage() {
             </div>
           </div>
 
-          <Link
-            href={`/conjugation/${lessonId}/test?profile=${profile}`}
-            className="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 rounded-lg transition text-center block"
-          >
-            Tester mes connaissances
-          </Link>
+          {/* Sélection des modes d'apprentissage */}
+          <div className="mt-8 pt-8 border-t-2 border-gray-200">
+            <h2 className="text-xl font-bold text-purple-600 mb-6 text-center">Choisir un mode</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Link
+                href={`/conjugation/${lessonId}/test?profile=${profile}`}
+                className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-6 rounded-lg transition text-center block shadow-lg"
+              >
+                <p className="text-lg">🎯 Quiz</p>
+                <p className="text-sm mt-2 opacity-90">Tester vos connaissances</p>
+              </Link>
+              <Link
+                href={`/conjugation/${lessonId}/exercises-list?profile=${profile}`}
+                className="bg-purple-400 hover:bg-purple-500 text-white font-bold py-6 rounded-lg transition text-center block shadow-lg"
+              >
+                <p className="text-lg">✍️ Exercices</p>
+                <p className="text-sm mt-2 opacity-90">Pratiquer la conjugaison</p>
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ConjugationLessonPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gradient-to-br from-purple-500 to-purple-600 p-4 flex items-center justify-center">
+          <p className="text-white text-xl">Chargement...</p>
+        </div>
+      }
+    >
+      <ConjugationLessonContent />
+    </Suspense>
   );
 }

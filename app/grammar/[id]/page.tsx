@@ -2,9 +2,8 @@
 
 import { useParams, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { grammarLessons } from '@/app/utils/grammarData';
-
-export const dynamic = 'force-dynamic';
 
 // Fonction pour parser et rendre le Markdown basique
 const renderMarkdownContent = (text: string) => {
@@ -29,7 +28,7 @@ const renderMarkdownContent = (text: string) => {
   });
 };
 
-export default function GrammarLessonPage() {
+function GrammarLessonContent() {
   const params = useParams();
   const searchParams = useSearchParams();
   const lessonId = params.id as string;
@@ -101,5 +100,19 @@ export default function GrammarLessonPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function GrammarLessonPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gradient-to-br from-blue-500 to-blue-600 p-4 flex items-center justify-center">
+          <p className="text-white text-xl">Chargement...</p>
+        </div>
+      }
+    >
+      <GrammarLessonContent />
+    </Suspense>
   );
 }
