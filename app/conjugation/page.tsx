@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { conjugationLessons } from '@/app/utils/conjugationData';
 
+export const dynamic = 'force-dynamic';
+
 export default function ConjugationPage() {
   const searchParams = useSearchParams();
   const profileId = searchParams.get('profile');

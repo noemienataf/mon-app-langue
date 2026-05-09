@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { grammarLessons } from '@/app/utils/grammarData';
 
+export const dynamic = 'force-dynamic';
+
 export default function GrammarPage() {
   const searchParams = useSearchParams();
   const profileId = searchParams.get('profile');
