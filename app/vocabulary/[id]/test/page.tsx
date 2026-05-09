@@ -4,6 +4,7 @@ import { useParams, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { vocabularyLists } from '@/app/utils/vocabularyData';
+import { getAllVocabularyLists } from '@/app/utils/customLists';
 import HebrewKeyboard from '@/components/HebrewKeyboard';
 
 interface TestQuestion {
@@ -26,7 +27,8 @@ export default function TestPage() {
   const listId = params.id as string;
   const profile = searchParams.get('profile') || 'User';
 
-  const list = vocabularyLists.find(l => l.id === listId);
+  const allLists = getAllVocabularyLists(vocabularyLists);
+  const list = allLists.find(l => l.id === listId);
   const [customWords, setCustomWords] = useState<CustomWord[]>([]);
   const [questions, setQuestions] = useState<TestQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);

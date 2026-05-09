@@ -4,6 +4,7 @@ import { useParams, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { vocabularyLists } from '@/app/utils/vocabularyData';
+import { getAllVocabularyLists } from '@/app/utils/customLists';
 import HebrewKeyboard from '@/components/HebrewKeyboard';
 
 interface CustomWord {
@@ -18,7 +19,8 @@ export default function StudyPage() {
   const listId = params.id as string;
   const profile = searchParams.get('profile') || 'User';
 
-  const list = vocabularyLists.find(l => l.id === listId);
+  const allLists = getAllVocabularyLists(vocabularyLists);
+  const list = allLists.find(l => l.id === listId);
   const [showAddForm, setShowAddForm] = useState(false);
   const [hebrewInput, setHebrewInput] = useState('');
   const [frenchInput, setFrenchInput] = useState('');
