@@ -4,6 +4,7 @@ import { useParams, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { vocabularyLists } from '@/app/utils/vocabularyData';
+import HebrewKeyboard from '@/components/HebrewKeyboard';
 
 interface CustomWord {
   id: string;
@@ -137,8 +138,8 @@ export default function StudyPage() {
 
           {/* Formulaire d'ajout de mots */}
           {showAddForm && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-              <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full">
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
+              <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-2xl my-8">
                 <h2 className="text-2xl font-bold text-blue-600 mb-6">Ajouter un mot</h2>
                 <form onSubmit={handleAddWord} className="space-y-4">
                   <div>
@@ -151,6 +152,7 @@ export default function StudyPage() {
                       className="w-full border-2 border-gray-300 rounded px-3 py-2 text-lg"
                       dir="rtl"
                     />
+                    <HebrewKeyboard value={hebrewInput} onChange={setHebrewInput} />
                   </div>
                   <div>
                     <label className="block text-gray-700 font-semibold mb-2">Français</label>
