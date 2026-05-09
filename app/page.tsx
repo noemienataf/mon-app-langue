@@ -11,8 +11,9 @@ interface ListWordCount {
 }
 
 export default function Home() {
-  const [screen, setScreen] = useState<'profile' | 'menu'>('profile');
+  const [screen, setScreen] = useState<'profile' | 'category' | 'vocabulary'>('profile');
   const [selectedProfile, setSelectedProfile] = useState<string>('');
+  const [selectedCategory, setSelectedCategory] = useState<'vocabulary' | 'grammar' | 'conjugation' | null>(null);
   const [profiles, setProfiles] = useState<string[]>([]);
   const [newProfileName, setNewProfileName] = useState('');
   const [wordCounts, setWordCounts] = useState<ListWordCount>({});
@@ -43,7 +44,12 @@ export default function Home() {
 
   const handleSelectProfile = (profile: string) => {
     setSelectedProfile(profile);
-    setScreen('menu');
+    setScreen('category');
+  };
+
+  const handleSelectCategory = (category: 'vocabulary' | 'grammar' | 'conjugation') => {
+    setSelectedCategory(category);
+    setScreen('vocabulary');
   };
 
   const handleAddProfile = () => {
@@ -118,18 +124,68 @@ export default function Home() {
     );
   }
 
+  if (screen === 'category') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-500 to-blue-600 p-4">
+        <div className="max-w-2xl mx-auto pt-8">
+          <button
+            onClick={() => setScreen('profile')}
+            className="text-white mb-6 hover:text-blue-100 font-semibold"
+          >
+            ← Changer de profil
+          </button>
+
+          <h1 className="text-white text-3xl font-bold mb-1">Bienvenue, {selectedProfile} !</h1>
+          <p className="text-blue-100 mb-8">Que veux-tu apprendre ?</p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Vocabulaire */}
+            <button
+              onClick={() => handleSelectCategory('vocabulary')}
+              className="bg-white rounded-lg shadow-lg p-8 hover:shadow-xl hover:scale-105 transition text-center"
+            >
+              <div className="text-5xl mb-4">📚</div>
+              <h2 className="text-2xl font-bold text-blue-600 mb-2">Vocabulaire</h2>
+              <p className="text-gray-600">Apprends des mots et des expressions</p>
+            </button>
+
+            {/* Grammaire */}
+            <button
+              onClick={() => handleSelectCategory('grammar')}
+              className="bg-white rounded-lg shadow-lg p-8 hover:shadow-xl hover:scale-105 transition text-center opacity-50 cursor-not-allowed"
+            >
+              <div className="text-5xl mb-4">✏️</div>
+              <h2 className="text-2xl font-bold text-gray-400 mb-2">Grammaire</h2>
+              <p className="text-gray-500 text-sm">Bientôt disponible</p>
+            </button>
+
+            {/* Conjugaison */}
+            <button
+              onClick={() => handleSelectCategory('conjugation')}
+              className="bg-white rounded-lg shadow-lg p-8 hover:shadow-xl hover:scale-105 transition text-center opacity-50 cursor-not-allowed"
+            >
+              <div className="text-5xl mb-4">🔄</div>
+              <h2 className="text-2xl font-bold text-gray-400 mb-2">Conjugaison</h2>
+              <p className="text-gray-500 text-sm">Bientôt disponible</p>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-500 to-blue-600 p-4">
       <div className="max-w-2xl mx-auto pt-8">
         <button
-          onClick={() => setScreen('profile')}
+          onClick={() => setScreen('category')}
           className="text-white mb-6 hover:text-blue-100 font-semibold"
         >
-          ← Changer de profil
+          ← Retour
         </button>
 
-        <h1 className="text-white text-3xl font-bold mb-1">Bienvenue, {selectedProfile} !</h1>
-        <p className="text-blue-100 mb-6">Sélectionne une liste de vocabulaire pour commencer</p>
+        <h1 className="text-white text-3xl font-bold mb-1">Vocabulaire</h1>
+        <p className="text-blue-100 mb-6">Sélectionne une liste pour commencer</p>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-3">
           {lists.map(list => (
