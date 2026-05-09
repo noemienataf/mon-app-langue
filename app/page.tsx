@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { vocabularyLists } from './utils/vocabularyData';
-import { getCustomLists, addCustomList, deleteCustomList, getAllVocabularyLists } from './utils/customLists';
+import { getCustomLists, addCustomList, deleteCustomList, getAllVocabularyLists, CustomList } from './utils/customLists';
 import Link from 'next/link';
 
 interface Profile {
@@ -21,7 +21,7 @@ export default function Home() {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [newProfileName, setNewProfileName] = useState('');
   const [wordCounts, setWordCounts] = useState<ListWordCount>({});
-  const [lists, setLists] = useState(vocabularyLists);
+  const [lists, setLists] = useState<CustomList[]>(vocabularyLists);
   const [showAddListForm, setShowAddListForm] = useState(false);
   const [newListName, setNewListName] = useState('');
   const [newListDescription, setNewListDescription] = useState('');
