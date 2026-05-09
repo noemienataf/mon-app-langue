@@ -10,7 +10,7 @@ export default function HebrewKeyboard({ value, onChange }: HebrewKeyboardProps)
   const rows = [
     ['ק', 'ו', 'ע', 'ר', 'ט', 'א', 'י', 'ו', 'פ'],
     ['ש', 'ד', 'ג', 'כ', 'ע', 'י', 'ח', 'ל', 'ף'],
-    ['ז', 'ס', 'ב', 'ה', 'נ', 'מ', 'צ'],
+    ['ז', 'ס', 'ב', 'ה', 'נ', 'מ', 'צ', 'ת'],
   ];
 
   return (

@@ -2,10 +2,8 @@
 
 import { useParams, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { conjugationLessons } from '@/app/utils/conjugationData';
-
-export const dynamic = 'force-dynamic';
 
 interface Question {
   id: string;
@@ -16,7 +14,7 @@ interface Question {
   userAnswer: number | null;
 }
 
-export default function ConjugationTestPage() {
+function ConjugationTestContent() {
   const params = useParams();
   const searchParams = useSearchParams();
   const lessonId = params.id as string;
@@ -237,5 +235,19 @@ export default function ConjugationTestPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ConjugationTestPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gradient-to-br from-purple-500 to-purple-600 p-4 flex items-center justify-center">
+          <p className="text-white text-xl">Chargement...</p>
+        </div>
+      }
+    >
+      <ConjugationTestContent />
+    </Suspense>
   );
 }

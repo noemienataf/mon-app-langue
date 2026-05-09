@@ -2,12 +2,10 @@
 
 import { useParams, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { vocabularyLists } from '@/app/utils/vocabularyData';
 import { getAllVocabularyLists } from '@/app/utils/customLists';
 import HebrewKeyboard from '@/components/HebrewKeyboard';
-
-export const dynamic = 'force-dynamic';
 
 interface TestQuestion {
   wordId: string;
@@ -27,7 +25,7 @@ interface CustomWord {
 type TestMode = 'quick' | 'master' | null;
 type TestType = 'sample' | 'all' | null;
 
-export default function TestPage() {
+function TestContent() {
   const params = useParams();
   const searchParams = useSearchParams();
   const listId = params.id as string;
@@ -458,5 +456,19 @@ export default function TestPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function TestPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gradient-to-br from-emerald-100 to-emerald-200 p-4 flex items-center justify-center">
+          <p className="text-emerald-700 text-xl">Chargement...</p>
+        </div>
+      }
+    >
+      <TestContent />
+    </Suspense>
   );
 }

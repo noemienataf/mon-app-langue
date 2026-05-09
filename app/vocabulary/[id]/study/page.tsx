@@ -2,12 +2,10 @@
 
 import { useParams, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { vocabularyLists } from '@/app/utils/vocabularyData';
 import { getAllVocabularyLists } from '@/app/utils/customLists';
 import HebrewKeyboard from '@/components/HebrewKeyboard';
-
-export const dynamic = 'force-dynamic';
 
 interface CustomWord {
   id: string;
@@ -15,7 +13,7 @@ interface CustomWord {
   french: string;
 }
 
-export default function StudyPage() {
+function StudyContent() {
   const params = useParams();
   const searchParams = useSearchParams();
   const listId = params.id as string;
@@ -193,5 +191,19 @@ export default function StudyPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function StudyPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gradient-to-br from-blue-500 to-blue-600 p-4 flex items-center justify-center">
+          <p className="text-white text-xl">Chargement...</p>
+        </div>
+      }
+    >
+      <StudyContent />
+    </Suspense>
   );
 }
