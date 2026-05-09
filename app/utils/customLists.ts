@@ -45,5 +45,6 @@ export function deleteCustomList(listId: string): void {
 
 export function getAllVocabularyLists(defaultLists: VocabularyList[]): CustomList[] {
   const customLists = getCustomLists();
-  return [...defaultLists, ...customLists] as CustomList[];
+  const defaultWithCustomFlag = defaultLists.map(list => ({ ...list, custom: false }));
+  return [...defaultWithCustomFlag, ...customLists] as CustomList[];
 }
