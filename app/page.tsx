@@ -5,14 +5,29 @@ import { getProfiles, addProfile } from './utils/localStorage';
 import { vocabularyLists } from './utils/vocabularyData';
 import Link from 'next/link';
 
+interface ListWordCount {
+  [key: string]: number;
+}
+
 export default function Home() {
   const [screen, setScreen] = useState<'profile' | 'menu'>('profile');
   const [selectedProfile, setSelectedProfile] = useState<string>('');
   const [profiles, setProfiles] = useState<string[]>([]);
   const [newProfileName, setNewProfileName] = useState('');
+  const [wordCounts, setWordCounts] = useState<ListWordCount>({});
 
   useEffect(() => {
     setProfiles(getProfiles());
+
+    // Charger le nombre de mots (par défaut + personnalisés)
+    const counts: ListWordCount = {};
+    vocabularyLists.forEach(list => {
+      const defaultCount = list.words.length;
+      const customData = localStorage.getItem(`custom-words-${list.id}`);
+      const customCount = customData ? JSON.parse(customData).length : 0;
+      counts[list.id] = defaultCount + customCount;
+    });
+    setWordCounts(counts);
   }, []);
 
   const handleSelectProfile = (profile: string) => {
@@ -97,7 +112,7 @@ export default function Home() {
             >
               <h3 className="text-xl font-bold text-blue-600 mb-2">{list.name}</h3>
               <p className="text-gray-600 text-sm mb-4">{list.description}</p>
-              <p className="text-blue-500 text-sm font-semibold">{list.words.length} mots</p>
+              <p className="text-blue-500 text-sm font-semibold">{wordCounts[list.id]} mots</p>
             </Link>
           ))}
         </div>
