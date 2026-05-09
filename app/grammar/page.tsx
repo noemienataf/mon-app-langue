@@ -2,12 +2,10 @@
 
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { grammarLessons } from '@/app/utils/grammarData';
 
-export const dynamic = 'force-dynamic';
-
-export default function GrammarPage() {
+function GrammarContent() {
   const searchParams = useSearchParams();
   const profileId = searchParams.get('profile');
   const [masteredLessons, setMasteredLessons] = useState<Set<string>>(new Set());
@@ -117,5 +115,19 @@ export default function GrammarPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function GrammarPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+          <p className="text-blue-600">Chargement...</p>
+        </div>
+      }
+    >
+      <GrammarContent />
+    </Suspense>
   );
 }

@@ -2,12 +2,10 @@
 
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { conjugationLessons } from '@/app/utils/conjugationData';
 
-export const dynamic = 'force-dynamic';
-
-export default function ConjugationPage() {
+function ConjugationContent() {
   const searchParams = useSearchParams();
   const profileId = searchParams.get('profile');
   const [masteredLessons, setMasteredLessons] = useState<Set<string>>(new Set());
@@ -117,5 +115,19 @@ export default function ConjugationPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ConjugationPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center">
+          <p className="text-purple-600">Chargement...</p>
+        </div>
+      }
+    >
+      <ConjugationContent />
+    </Suspense>
   );
 }
