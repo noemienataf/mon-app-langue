@@ -1,0 +1,18 @@
+import { useState, useEffect } from 'react';
+
+export function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    // Vérifier la taille de l'écran
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768); // Tailwind md breakpoint
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  return isMobile;
+}
