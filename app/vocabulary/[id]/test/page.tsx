@@ -10,7 +10,9 @@ import HebrewKeyboard from '@/components/HebrewKeyboard';
 interface TestQuestion {
   wordId: string;
   word: string;
+  wordWithVowels?: string; // Pour afficher les voyelles hébreues
   answer: string;
+  answerWithVowels?: string; // Pour afficher la bonne réponse avec voyelles
   type: 'hebrew-to-french' | 'french-to-hebrew';
   correct: boolean | null;
   options?: string[]; // Pour les questions à choix multiples (Quick mode)
@@ -19,6 +21,7 @@ interface TestQuestion {
 interface CustomWord {
   id: string;
   hebrew: string;
+  hebrewWithVowels?: string;
   french: string;
 }
 
@@ -65,7 +68,9 @@ function TestContent() {
       const newQuestions: TestQuestion[] = wordsToUse.slice(0, 10).map((word) => {
         const isHebrew = Math.random() > 0.5;
         const question = isHebrew ? word.hebrew : word.french;
+        const wordWithVowels = isHebrew && (word as any).hebrewWithVowels ? (word as any).hebrewWithVowels : undefined;
         const answer = isHebrew ? word.french : word.hebrew;
+        const answerWithVowels = !isHebrew && (word as any).hebrewWithVowels ? (word as any).hebrewWithVowels : undefined;
 
         // Générer 3 mauvaises réponses
         const otherWords = allWords.filter(w => w.id !== word.id);
@@ -79,7 +84,9 @@ function TestContent() {
         return {
           wordId: word.id,
           word: question,
+          wordWithVowels: wordWithVowels,
           answer: answer,
+          answerWithVowels: answerWithVowels,
           type: isHebrew ? 'hebrew-to-french' : 'french-to-hebrew',
           correct: null,
           options: options,
@@ -89,13 +96,18 @@ function TestContent() {
       setQuestions(newQuestions);
     } else {
       // Mode Master: typing
-      const newQuestions: TestQuestion[] = wordsToUse.map((word, index) => ({
-        wordId: word.id,
-        word: index % 2 === 0 ? word.hebrew : word.french,
-        answer: index % 2 === 0 ? word.french : word.hebrew,
-        type: index % 2 === 0 ? 'hebrew-to-french' : 'french-to-hebrew',
-        correct: null,
-      }));
+      const newQuestions: TestQuestion[] = wordsToUse.map((word, index) => {
+        const isHebrew = index % 2 === 0;
+        return {
+          wordId: word.id,
+          word: isHebrew ? word.hebrew : word.french,
+          wordWithVowels: isHebrew && (word as any).hebrewWithVowels ? (word as any).hebrewWithVowels : undefined,
+          answer: isHebrew ? word.french : word.hebrew,
+          answerWithVowels: !isHebrew && (word as any).hebrewWithVowels ? (word as any).hebrewWithVowels : undefined,
+          type: isHebrew ? 'hebrew-to-french' : 'french-to-hebrew',
+          correct: null,
+        };
+      });
 
       setQuestions(newQuestions);
     }
@@ -103,11 +115,23 @@ function TestContent() {
 
   useEffect(() => {
     if (!listId) return;
-    const saved = localStorage.getItem(`custom-words-${listId}`);
-    if (saved) {
-      setCustomWords(JSON.parse(saved));
-    }
+    fetchCustomWords();
   }, [listId]);
+
+  const fetchCustomWords = async () => {
+    try {
+      const response = await fetch(`/api/vocabulary/words?listId=${listId}`);
+      const data = await response.json();
+      setCustomWords(data.map((word: any) => ({
+        id: word.id,
+        hebrew: word.hebrew,
+        hebrewWithVowels: word.hebrewWithVowels,
+        french: word.french,
+      })));
+    } catch (error) {
+      console.error('Erreur lors du chargement des mots personnalisés:', error);
+    }
+  };
 
   const handleStartTest = (selectedMode: TestMode, selectedType?: TestType) => {
     setMode(selectedMode);
@@ -211,7 +235,21 @@ function TestContent() {
   }
 
   const currentQuestion = questions[currentIndex];
-  const normalizeAnswer = (text: string) => text.trim().toLowerCase().replace(/\s+/g, ' ');
+
+  // Normalise answers: removes accents from French and vowels from Hebrew
+  const normalizeAnswer = (text: string) => {
+    let normalized = text.trim().toLowerCase().replace(/\s+/g, ' ');
+
+    // Enlever les accents du français (é -> e, è -> e, etc.)
+    normalized = normalized.normalize('NFD').replace(/[̀-ͯ]/g, '');
+
+    // Enlever les voyelles hébreues (nekudot)
+    normalized = normalized
+      .replace(/[ְ-ֽ]/g, '') // Tous les diacritiques hébreu (patach, segol, etc.)
+      .replace(/[ֿ]/g, ''); // Rafe
+
+    return normalized;
+  };
 
   const isAnswerCorrect = mode === 'quick'
     ? userAnswer === currentQuestion.answer
@@ -336,7 +374,7 @@ function TestContent() {
               className="text-4xl font-bold text-emerald-600"
               dir={currentQuestion.type === 'hebrew-to-french' ? 'rtl' : 'ltr'}
             >
-              {currentQuestion.word}
+              {currentQuestion.wordWithVowels || currentQuestion.word}
             </p>
           </div>
 
@@ -423,7 +461,7 @@ function TestContent() {
               </p>
               {!isAnswerCorrect && (
                 <p className="text-gray-700">
-                  Bonne réponse: <span className="font-semibold" dir={currentQuestion.type === 'french-to-hebrew' ? 'rtl' : 'ltr'}>{currentQuestion.answer}</span>
+                  Bonne réponse: <span className="font-semibold" dir={currentQuestion.type === 'french-to-hebrew' ? 'rtl' : 'ltr'}>{currentQuestion.answerWithVowels || currentQuestion.answer}</span>
                 </p>
               )}
             </div>
