@@ -3,6 +3,7 @@ export interface Word {
   hebrew: string;
   hebrewWithVowels?: string;
   french: string;
+  isCustom?: boolean;
 }
 
 export interface VocabularyList {
