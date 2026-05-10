@@ -13,9 +13,17 @@ export default function HebrewKeyboard({ value, onChange }: HebrewKeyboardProps)
     ['ז', 'ס', 'ב', 'ה', 'נ', 'מ', 'צ', 'ת'],
   ];
 
+  // Lettres finales (sofit)
+  const sofitLetters = ['ך', 'ם', 'ן', 'ף', 'ץ'];
+
   return (
     <div className="mt-6 bg-gray-100 p-6 rounded-lg" dir="ltr">
-      <p className="text-sm text-gray-600 mb-4">Clavier hébreu QWERTY:</p>
+      <p className="text-sm text-gray-600 mb-3">Clavier hébreu QWERTY:</p>
+
+      {/* Affiche le texte saisi */}
+      <div className="bg-white border-2 border-gray-300 rounded px-3 py-2 mb-4 text-right" dir="rtl">
+        <p className="text-lg text-gray-800 font-semibold min-h-[32px]">{value || ' '}</p>
+      </div>
 
       {rows.map((row, rowIndex) => (
         <div key={rowIndex} className="flex justify-center gap-2 mb-2">
@@ -30,6 +38,20 @@ export default function HebrewKeyboard({ value, onChange }: HebrewKeyboardProps)
           ))}
         </div>
       ))}
+
+      {/* Rangée des lettres finales (sofit) */}
+      <div className="flex justify-center gap-2 mb-4">
+        {sofitLetters.map((letter, index) => (
+          <button
+            key={`sofit-${index}`}
+            onClick={() => onChange(value + letter)}
+            className="bg-yellow-100 border border-yellow-400 rounded px-4 py-2 hover:bg-yellow-200 font-bold text-lg min-w-[44px]"
+            title={`${letter} (lettre finale)`}
+          >
+            {letter}
+          </button>
+        ))}
+      </div>
 
       {/* Rangée de contrôle */}
       <div className="flex justify-center gap-2 mt-4">
