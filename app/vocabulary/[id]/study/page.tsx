@@ -10,6 +10,7 @@ import HebrewKeyboard from '@/components/HebrewKeyboard';
 interface CustomWord {
   id: string;
   hebrew: string;
+  hebrewWithVowels?: string;
   french: string;
   isCustom?: boolean;
 }
@@ -41,6 +42,7 @@ function StudyContent() {
       setCustomWords(data.map((word: any) => ({
         id: word.id,
         hebrew: word.hebrew,
+        hebrewWithVowels: word.hebrewWithVowels,
         french: word.french,
         isCustom: true,
       })));
@@ -73,6 +75,7 @@ function StudyContent() {
       setCustomWords([...customWords, {
         id: newWord.id,
         hebrew: newWord.hebrew,
+        hebrewWithVowels: newWord.hebrewWithVowels,
         french: newWord.french,
         isCustom: true,
       }]);

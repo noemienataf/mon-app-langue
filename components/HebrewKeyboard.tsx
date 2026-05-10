@@ -8,8 +8,8 @@ interface HebrewKeyboardProps {
 export default function HebrewKeyboard({ value, onChange }: HebrewKeyboardProps) {
   // Disposition QWERTY hébraïque complète (clavier israélien standard)
   const rows = [
-    ['ק', 'ו', 'ע', 'ר', 'ט', 'א', 'י', 'ו', 'פ'],
-    ['ש', 'ד', 'ג', 'כ', 'ע', 'י', 'ח', 'ל', 'ף'],
+    ['ק', 'ו', 'ע', 'ר', 'ט', 'א', 'י', 'פ'],
+    ['ש', 'ד', 'ג', 'כ', 'ח', 'ל'],
     ['ז', 'ס', 'ב', 'ה', 'נ', 'מ', 'צ', 'ת'],
   ];
 
