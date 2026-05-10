@@ -151,7 +151,8 @@ function StudyContent() {
                     <td className="py-4 px-4 text-gray-600 font-semibold">{index + 1}</td>
                     <td className="py-4 px-4 text-gray-700">{word.french}</td>
                     <td className="py-4 px-4 text-lg text-gray-800 font-semibold text-right" dir="rtl">
-                      {word.hebrew}
+                      <div>{(word as any).hebrewWithVowels || word.hebrew}</div>
+                      <div className="text-sm text-gray-500">{(word as any).hebrewWithVowels ? word.hebrew : ''}</div>
                     </td>
                     <td className="py-4 px-4">
                       {word.isCustom ? (
