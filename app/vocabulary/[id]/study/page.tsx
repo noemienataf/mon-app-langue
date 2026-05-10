@@ -11,6 +11,7 @@ interface CustomWord {
   id: string;
   hebrew: string;
   french: string;
+  isCustom?: boolean;
 }
 
 function StudyContent() {
@@ -25,53 +26,95 @@ function StudyContent() {
   const [hebrewInput, setHebrewInput] = useState('');
   const [frenchInput, setFrenchInput] = useState('');
   const [customWords, setCustomWords] = useState<CustomWord[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Charger les mots personnalisés depuis localStorage
+  // Charger les mots personnalisés depuis l'API
   useEffect(() => {
     if (!listId) return;
-    const saved = localStorage.getItem(`custom-words-${listId}`);
-    if (saved) {
-      setCustomWords(JSON.parse(saved));
-    }
+    fetchCustomWords();
   }, [listId]);
 
-  const handleAddWord = (e: React.FormEvent) => {
+  const fetchCustomWords = async () => {
+    try {
+      const response = await fetch(`/api/vocabulary/words?listId=${listId}`);
+      const data = await response.json();
+      setCustomWords(data.map((word: any) => ({
+        id: word.id,
+        hebrew: word.hebrew,
+        french: word.french,
+        isCustom: true,
+      })));
+    } catch (error) {
+      console.error('Erreur lors du chargement des mots personnalisés:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddWord = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!hebrewInput.trim() || !frenchInput.trim()) return;
 
-    const newWord: CustomWord = {
-      id: `custom-${Date.now()}`,
-      hebrew: hebrewInput,
-      french: frenchInput,
-    };
+    try {
+      const response = await fetch('/api/vocabulary/words', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          listId,
+          hebrew: hebrewInput,
+          french: frenchInput,
+          profileId: profile,
+        }),
+      });
 
-    const updated = [...customWords, newWord];
-    setCustomWords(updated);
-    localStorage.setItem(`custom-words-${listId}`, JSON.stringify(updated));
+      if (!response.ok) throw new Error('Erreur lors de l\'ajout du mot');
 
-    setHebrewInput('');
-    setFrenchInput('');
-    setShowAddForm(false);
+      const newWord = await response.json();
+      setCustomWords([...customWords, {
+        id: newWord.id,
+        hebrew: newWord.hebrew,
+        french: newWord.french,
+        isCustom: true,
+      }]);
+
+      setHebrewInput('');
+      setFrenchInput('');
+      setShowAddForm(false);
+    } catch (error) {
+      console.error('Erreur lors de l\'ajout du mot:', error);
+      alert('Erreur lors de l\'ajout du mot');
+    }
   };
 
-  const handleDeleteWord = (id: string) => {
-    const updated = customWords.filter(w => w.id !== id);
-    setCustomWords(updated);
-    localStorage.setItem(`custom-words-${listId}`, JSON.stringify(updated));
+  const handleDeleteWord = async (id: string) => {
+    try {
+      const response = await fetch('/api/vocabulary/words', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      });
+
+      if (!response.ok) throw new Error('Erreur lors de la suppression');
+
+      setCustomWords(customWords.filter(w => w.id !== id));
+    } catch (error) {
+      console.error('Erreur lors de la suppression du mot:', error);
+      alert('Erreur lors de la suppression du mot');
+    }
   };
 
   // Combiner les mots par défaut et les mots personnalisés
   const allWords = list ? [...list.words, ...customWords] : [];
 
-  if (!list) {
+  if (!list || loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-500 to-blue-600 p-4">
-        <div className="max-w-2xl mx-auto text-center pt-12">
-          <p className="text-white text-xl">Liste non trouvée</p>
-          <Link href={`/?profile=${profile}`} className="text-blue-100 hover:text-white mt-4 block">
+      <div className="min-h-screen bg-gradient-to-br from-blue-500 to-blue-600 p-4 flex items-center justify-center">
+        <p className="text-white text-xl">{!list ? 'Liste non trouvée' : 'Chargement...'}</p>
+        {!list && (
+          <Link href={`/?profile=${profile}`} className="text-blue-100 hover:text-white mt-4 block absolute bottom-8">
             ← Retour
           </Link>
-        </div>
+        )}
       </div>
     );
   }
@@ -99,6 +142,7 @@ function StudyContent() {
                   <th className="text-left py-4 px-4 text-blue-600 font-bold">Français</th>
                   <th className="text-right py-4 px-4 text-blue-600 font-bold">Hébreu</th>
                   <th className="text-left py-4 px-4 text-blue-600 font-bold">Type</th>
+                  <th className="text-left py-4 px-4 text-blue-600 font-bold">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -110,7 +154,7 @@ function StudyContent() {
                       {word.hebrew}
                     </td>
                     <td className="py-4 px-4">
-                      {word.id.startsWith('custom-') ? (
+                      {word.isCustom ? (
                         <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">
                           Personnalisé
                         </span>
@@ -118,6 +162,16 @@ function StudyContent() {
                         <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
                           Défaut
                         </span>
+                      )}
+                    </td>
+                    <td className="py-4 px-4">
+                      {word.isCustom && (
+                        <button
+                          onClick={() => handleDeleteWord(word.id)}
+                          className="text-red-500 hover:text-red-700 font-semibold text-sm"
+                        >
+                          Supprimer
+                        </button>
                       )}
                     </td>
                   </tr>
