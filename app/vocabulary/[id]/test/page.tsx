@@ -103,11 +103,22 @@ function TestContent() {
 
   useEffect(() => {
     if (!listId) return;
-    const saved = localStorage.getItem(`custom-words-${listId}`);
-    if (saved) {
-      setCustomWords(JSON.parse(saved));
-    }
+    fetchCustomWords();
   }, [listId]);
+
+  const fetchCustomWords = async () => {
+    try {
+      const response = await fetch(`/api/vocabulary/words?listId=${listId}`);
+      const data = await response.json();
+      setCustomWords(data.map((word: any) => ({
+        id: word.id,
+        hebrew: word.hebrew,
+        french: word.french,
+      })));
+    } catch (error) {
+      console.error('Erreur lors du chargement des mots personnalisés:', error);
+    }
+  };
 
   const handleStartTest = (selectedMode: TestMode, selectedType?: TestType) => {
     setMode(selectedMode);
@@ -211,7 +222,21 @@ function TestContent() {
   }
 
   const currentQuestion = questions[currentIndex];
-  const normalizeAnswer = (text: string) => text.trim().toLowerCase().replace(/\s+/g, ' ');
+
+  // Normalise answers: removes accents from French and vowels from Hebrew
+  const normalizeAnswer = (text: string) => {
+    let normalized = text.trim().toLowerCase().replace(/\s+/g, ' ');
+
+    // Enlever les accents du français (é -> e, è -> e, etc.)
+    normalized = normalized.normalize('NFD').replace(/[̀-ͯ]/g, '');
+
+    // Enlever les voyelles hébreues (nekudot)
+    normalized = normalized
+      .replace(/[ְ-ֽ]/g, '') // Tous les diacritiques hébreu (patach, segol, etc.)
+      .replace(/[ֿ]/g, ''); // Rafe
+
+    return normalized;
+  };
 
   const isAnswerCorrect = mode === 'quick'
     ? userAnswer === currentQuestion.answer

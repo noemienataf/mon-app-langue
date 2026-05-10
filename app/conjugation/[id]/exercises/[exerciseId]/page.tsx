@@ -125,8 +125,17 @@ function ConjugationExercisesContent() {
 
   const currentExercise = exercises[currentIndex];
   const isTyping = currentExercise?.type === 'typing';
+
+  // Normalise Hebrew answers by removing vowels (nekudot)
+  const normalizeHebrewAnswer = (text: string) => {
+    return text
+      .trim()
+      .replace(/[ְ-ֽ]/g, '') // Remove all Hebrew diacritics (vowels)
+      .replace(/[ֿ]/g, '');   // Remove rafe
+  };
+
   const isCorrect = isTyping
-    ? userAnswer.trim() === currentExercise?.correctAnswer.trim()
+    ? normalizeHebrewAnswer(userAnswer) === normalizeHebrewAnswer(currentExercise?.correctAnswer || '')
     : userAnswer === String(currentExercise?.options?.indexOf(currentExercise?.correctAnswer));
 
   const handleCheckAnswer = () => {
