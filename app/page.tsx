@@ -32,7 +32,7 @@ export default function Home() {
   useEffect(() => {
     fetchProfiles();
     loadLists();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchProfiles = async () => {
     try {
@@ -46,17 +46,26 @@ export default function Home() {
     }
   };
 
-  const loadLists = () => {
+  const loadLists = async () => {
     const allLists = getAllVocabularyLists(vocabularyLists);
     setLists(allLists);
 
     const counts: ListWordCount = {};
-    allLists.forEach(list => {
-      const defaultCount = list.words.length;
-      const customData = localStorage.getItem(`custom-words-${list.id}`);
-      const customCount = customData ? JSON.parse(customData).length : 0;
-      counts[list.id] = defaultCount + customCount;
-    });
+
+    // Charger le comptage de mots pour chaque liste (défaut + personnalisés depuis Supabase)
+    for (const list of allLists) {
+      try {
+        const defaultCount = list.words.length;
+        const response = await fetch(`/api/vocabulary/words?listId=${list.id}`);
+        const customWords = await response.json();
+        const customCount = customWords.length || 0;
+        counts[list.id] = defaultCount + customCount;
+      } catch (error) {
+        // Si l'API échoue, utiliser juste le comptage par défaut
+        counts[list.id] = list.words.length;
+      }
+    }
+
     setWordCounts(counts);
   };
 
