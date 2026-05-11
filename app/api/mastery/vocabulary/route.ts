@@ -1,19 +1,61 @@
 import { supabase } from '@/app/utils/supabaseClient';
 import { NextRequest, NextResponse } from 'next/server';
+import jwt from 'jsonwebtoken';
 
-// GET listes maîtrisées pour un profil
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+
+// Extraire le userId du JWT token
+function getUserIdFromRequest(request: NextRequest): string | null {
+  const authHeader = request.headers.get('Authorization');
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return null;
+  }
+
+  try {
+    const token = authHeader.slice(7);
+    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
+    return decoded.userId;
+  } catch {
+    return null;
+  }
+}
+
+// Vérifier que l'utilisateur possède le language_profile
+async function verifyLanguageProfileOwnership(
+  userId: string,
+  languageProfileId: string
+): Promise<boolean> {
+  const { data, error } = await supabase
+    .from('language_profiles')
+    .select('id')
+    .eq('id', languageProfileId)
+    .eq('user_id', userId)
+    .single();
+
+  return !!data && !error;
+}
+
+// GET listes maîtrisées pour un profil de langue
 export async function GET(request: NextRequest) {
   try {
-    const profileId = request.nextUrl.searchParams.get('profileId');
+    const userId = getUserIdFromRequest(request);
+    const languageProfileId = request.nextUrl.searchParams.get('languageProfileId');
 
-    if (!profileId) {
-      return NextResponse.json({ error: 'Profile ID is required' }, { status: 400 });
+    if (!userId || !languageProfileId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Vérifier que l'utilisateur possède ce language_profile
+    const isOwner = await verifyLanguageProfileOwnership(userId, languageProfileId);
+    if (!isOwner) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     const { data, error } = await supabase
       .from('mastery_vocabulary')
       .select('list_id')
-      .eq('profile_id', profileId);
+      .eq('language_profile_id', languageProfileId);
 
     if (error) throw error;
 
@@ -26,15 +68,30 @@ export async function GET(request: NextRequest) {
 // POST marquer une liste comme maîtrisée
 export async function POST(request: NextRequest) {
   try {
-    const { profileId, listId } = await request.json();
+    const userId = getUserIdFromRequest(request);
 
-    if (!profileId || !listId) {
-      return NextResponse.json({ error: 'Profile ID and List ID are required' }, { status: 400 });
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { languageProfileId, listId } = await request.json();
+
+    if (!languageProfileId || !listId) {
+      return NextResponse.json(
+        { error: 'Language Profile ID and List ID are required' },
+        { status: 400 }
+      );
+    }
+
+    // Vérifier que l'utilisateur possède ce language_profile
+    const isOwner = await verifyLanguageProfileOwnership(userId, languageProfileId);
+    if (!isOwner) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     const { data, error } = await supabase
       .from('mastery_vocabulary')
-      .insert([{ profile_id: profileId, list_id: listId }])
+      .insert([{ language_profile_id: languageProfileId, list_id: listId }])
       .select();
 
     if (error) throw error;
@@ -48,16 +105,31 @@ export async function POST(request: NextRequest) {
 // DELETE retirer une liste maîtrisée
 export async function DELETE(request: NextRequest) {
   try {
-    const { profileId, listId } = await request.json();
+    const userId = getUserIdFromRequest(request);
 
-    if (!profileId || !listId) {
-      return NextResponse.json({ error: 'Profile ID and List ID are required' }, { status: 400 });
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { languageProfileId, listId } = await request.json();
+
+    if (!languageProfileId || !listId) {
+      return NextResponse.json(
+        { error: 'Language Profile ID and List ID are required' },
+        { status: 400 }
+      );
+    }
+
+    // Vérifier que l'utilisateur possède ce language_profile
+    const isOwner = await verifyLanguageProfileOwnership(userId, languageProfileId);
+    if (!isOwner) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     const { error } = await supabase
       .from('mastery_vocabulary')
       .delete()
-      .eq('profile_id', profileId)
+      .eq('language_profile_id', languageProfileId)
       .eq('list_id', listId);
 
     if (error) throw error;
