@@ -1,4 +1,4 @@
-import { supabase } from '@/app/utils/supabaseClient';
+import { supabaseAdmin } from '@/app/utils/supabaseServer';
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -8,60 +8,80 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-producti
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password } = await request.json();
+    const { username, password } = await request.json();
 
-    if (!email || !password) {
+    if (!username || !password) {
       return NextResponse.json(
-        { error: 'Email and password are required' },
+        { error: 'Username et password requis' },
         { status: 400 }
       );
     }
 
-    // Hasher le mot de passe
-    const passwordHash = await bcrypt.hash(password, 10);
-    const userId = uuidv4();
+    // Vérifier si l'utilisateur existe déjà
+    const { data: existingUsers } = await supabaseAdmin
+      .from('profiles')
+      .select('id')
+      .eq('username', username);
 
-    // Créer l'utilisateur dans Supabase
-    const { data, error } = await supabase
-      .from('users')
+    if (existingUsers && existingUsers.length > 0) {
+      return NextResponse.json(
+        { error: 'Ce username existe déjà' },
+        { status: 400 }
+      );
+    }
+
+    // Hash le password
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    // Créer le nouvel utilisateur
+    const userId = uuidv4();
+    console.log('Creating user with ID:', userId);
+    const { data: newUser, error } = await supabaseAdmin
+      .from('profiles')
       .insert([
         {
           id: userId,
-          email,
+          username,
           password_hash: passwordHash,
         },
       ])
       .select();
 
+    console.log('Insert result:', { newUser, error });
     if (error) {
-      if (error.message.includes('duplicate')) {
-        return NextResponse.json(
-          { error: 'Email already exists' },
-          { status: 409 }
-        );
-      }
+      console.error('Database error on insert:', error);
       throw error;
     }
 
-    // Créer le JWT token
+    if (!newUser || newUser.length === 0) {
+      console.error('No user returned after insert');
+      throw new Error('Failed to create user');
+    }
+
+    const user = newUser[0];
+    console.log('User created:', user);
+
+    // Créer un token JWT
     const token = jwt.sign(
-      { userId, email },
+      { userId: user.id, username: user.username },
       JWT_SECRET,
       { expiresIn: '7d' }
     );
 
     return NextResponse.json(
       {
+        success: true,
+        message: 'Inscription réussie',
         token,
-        user: {
-          id: userId,
-          email,
-        },
+        user: { id: user.id, username: user.username }
       },
       { status: 201 }
     );
-  } catch (error) {
-    console.error('Signup error:', error);
-    return NextResponse.json({ error: (error as Error).message }, { status: 500 });
+  } catch (error: any) {
+    console.error('Erreur signup:', error);
+    return NextResponse.json(
+      { error: error.message || 'Erreur lors de l\'inscription' },
+      { status: 500 }
+    );
   }
 }

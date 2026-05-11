@@ -1,4 +1,4 @@
-import { supabase } from '@/app/utils/supabaseClient';
+import { supabaseAdmin } from '@/app/utils/supabaseServer';
 import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 
@@ -26,7 +26,7 @@ async function verifyLanguageProfileOwnership(
   userId: string,
   languageProfileId: string
 ): Promise<boolean> {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('language_profiles')
     .select('id')
     .eq('id', languageProfileId)
@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('mastery_grammar')
       .select('lesson_id')
       .eq('language_profile_id', languageProfileId);
@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('mastery_grammar')
       .insert([{ language_profile_id: languageProfileId, lesson_id: lessonId }])
       .select();
@@ -126,7 +126,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from('mastery_grammar')
       .delete()
       .eq('language_profile_id', languageProfileId)

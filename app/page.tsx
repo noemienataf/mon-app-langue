@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { vocabularyLists } from './utils/vocabularyData';
+import { vocabularyLists, getVocabularyListsByLanguage } from './utils/vocabularyData';
 import { getCustomLists, getAllVocabularyLists, CustomList } from './utils/customLists';
 import { getToken, getCurrentLanguageProfile, setCurrentLanguageProfile, logout } from './utils/auth';
 
@@ -19,7 +19,6 @@ interface LanguageProfile {
 const LANGUAGES = [
   { code: 'hebrew', name: 'Hébreu', flag: '🇮🇱' },
   { code: 'portuguese', name: 'Portugais', flag: '🇧🇷' },
-  { code: 'spanish', name: 'Espagnol', flag: '🇪🇸' },
 ];
 
 export default function Home() {
@@ -48,15 +47,23 @@ export default function Home() {
   const fetchUserLanguages = async () => {
     try {
       const token = getToken();
+      console.log('Token exists:', !!token);
       if (!token) return;
 
+      console.log('Fetching language profiles...');
       const response = await fetch('/api/profiles/user', {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (!response.ok) throw new Error('Failed to fetch user languages');
+      console.log('Response status:', response.status);
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error from server:', errorData);
+        throw new Error(errorData.error || 'Failed to fetch user languages');
+      }
 
       const languages = await response.json();
+      console.log('Languages loaded:', languages);
       setUserLanguages(languages);
 
       // Vérifier si une langue était déjà sélectionnée
@@ -68,7 +75,7 @@ export default function Home() {
       }
     } catch (error) {
       console.error('Erreur lors du chargement des langues:', error);
-      setError('Erreur lors du chargement');
+      setError(`Erreur: ${error instanceof Error ? error.message : 'Unknown error'}`);
       setScreen('language');
     }
   };
@@ -78,7 +85,7 @@ export default function Home() {
     setCurrentLanguageProfile(language.id);
 
     // Charger les listes et la maîtrise du vocabulaire
-    const allLists = getAllVocabularyLists(vocabularyLists);
+    const allLists = getAllVocabularyLists(getVocabularyListsByLanguage(language.language));
     setLists(allLists);
 
     const counts: ListWordCount = {};
@@ -129,14 +136,18 @@ export default function Home() {
         body: JSON.stringify({ language }),
       });
 
-      if (!response.ok) throw new Error('Failed to select language');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `Erreur ${response.status}`);
+      }
 
       const newLanguage: LanguageProfile = await response.json();
       setUserLanguages([...userLanguages, newLanguage]);
       selectLanguage(newLanguage);
     } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'Erreur inconnue';
       console.error('Erreur lors de la sélection de la langue:', error);
-      setError('Erreur lors de la sélection');
+      setError(`Erreur: ${errorMsg}`);
     }
   };
 
@@ -327,7 +338,7 @@ export default function Home() {
           {lists.map(list => (
             <div key={list.id} className="relative group">
               <Link
-                href={`/vocabulary/${list.id}/study?languageProfileId=${currentLanguageProfile?.id}`}
+                href={`/vocabulary/${list.id}/study?languageProfileId=${currentLanguageProfile?.id}&language=${currentLanguageProfile?.language}`}
                 className="bg-white rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition block p-4 pr-12 h-36 flex flex-col border border-emerald-100"
               >
                 <h3 className="text-sm font-bold text-emerald-700 mb-1">{list.name}</h3>

@@ -1,10 +1,11 @@
 'use client';
 
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useState, useEffect, Suspense } from 'react';
-import { vocabularyLists } from '@/app/utils/vocabularyData';
+import { vocabularyLists, getVocabularyListsByLanguage } from '@/app/utils/vocabularyData';
 import { getAllVocabularyLists } from '@/app/utils/customLists';
+import { getToken } from '@/app/utils/auth';
 import HebrewKeyboard from '@/components/HebrewKeyboard';
 
 interface CustomWord {
@@ -18,26 +19,42 @@ interface CustomWord {
 function StudyContent() {
   const params = useParams();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const listId = params.id as string;
-  const profile = searchParams.get('profile') || 'User';
+  const languageProfileId = searchParams.get('languageProfileId');
+  const language = searchParams.get('language') || 'hebrew';
 
-  const allLists = getAllVocabularyLists(vocabularyLists);
+  const allLists = getAllVocabularyLists(getVocabularyListsByLanguage(language));
   const list = allLists.find(l => l.id === listId);
   const [showAddForm, setShowAddForm] = useState(false);
   const [hebrewInput, setHebrewInput] = useState('');
   const [frenchInput, setFrenchInput] = useState('');
   const [customWords, setCustomWords] = useState<CustomWord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  // Charger les mots personnalisés depuis l'API
+  // Vérifier l'authentification et charger les données
   useEffect(() => {
-    if (!listId) return;
+    const token = getToken();
+    if (!token || !languageProfileId) {
+      router.push('/');
+      return;
+    }
     fetchCustomWords();
-  }, [listId]);
+  }, [listId, languageProfileId, router]);
 
   const fetchCustomWords = async () => {
     try {
-      const response = await fetch(`/api/vocabulary/words?listId=${listId}`);
+      const token = getToken();
+      if (!token || !languageProfileId) return;
+
+      const response = await fetch(
+        `/api/vocabulary/words?listId=${listId}&languageProfileId=${languageProfileId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (!response.ok) throw new Error('Erreur lors du chargement');
+
       const data = await response.json();
       setCustomWords(data.map((word: any) => ({
         id: word.id,
@@ -48,6 +65,7 @@ function StudyContent() {
       })));
     } catch (error) {
       console.error('Erreur lors du chargement des mots personnalisés:', error);
+      setError('Erreur lors du chargement');
     } finally {
       setLoading(false);
     }
@@ -58,14 +76,20 @@ function StudyContent() {
     if (!hebrewInput.trim() || !frenchInput.trim()) return;
 
     try {
+      const token = getToken();
+      if (!token || !languageProfileId) return;
+
       const response = await fetch('/api/vocabulary/words', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({
           listId,
           hebrew: hebrewInput,
           french: frenchInput,
-          profileId: profile,
+          languageProfileId,
         }),
       });
 
@@ -85,16 +109,22 @@ function StudyContent() {
       setShowAddForm(false);
     } catch (error) {
       console.error('Erreur lors de l\'ajout du mot:', error);
-      alert('Erreur lors de l\'ajout du mot');
+      setError('Erreur lors de l\'ajout du mot');
     }
   };
 
   const handleDeleteWord = async (id: string) => {
     try {
+      const token = getToken();
+      if (!token || !languageProfileId) return;
+
       const response = await fetch('/api/vocabulary/words', {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id }),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ id, languageProfileId }),
       });
 
       if (!response.ok) throw new Error('Erreur lors de la suppression');
@@ -102,7 +132,7 @@ function StudyContent() {
       setCustomWords(customWords.filter(w => w.id !== id));
     } catch (error) {
       console.error('Erreur lors de la suppression du mot:', error);
-      alert('Erreur lors de la suppression du mot');
+      setError('Erreur lors de la suppression du mot');
     }
   };
 
@@ -111,10 +141,10 @@ function StudyContent() {
 
   if (!list || loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-500 to-blue-600 p-4 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-300 to-blue-400 p-4 flex items-center justify-center">
         <p className="text-white text-xl">{!list ? 'Liste non trouvée' : 'Chargement...'}</p>
         {!list && (
-          <Link href={`/?profile=${profile}`} className="text-blue-100 hover:text-white mt-4 block absolute bottom-8">
+          <Link href={`/?languageProfileId=${languageProfileId}`} className="text-blue-100 hover:text-white mt-4 block absolute bottom-8">
             ← Retour
           </Link>
         )}
@@ -123,10 +153,10 @@ function StudyContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-500 to-blue-600 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-300 to-blue-400 p-4">
       <div className="max-w-4xl mx-auto">
         <Link
-          href={`/?profile=${profile}`}
+          href={`/?languageProfileId=${languageProfileId}`}
           className="text-white mb-6 hover:text-blue-100 font-semibold inline-block"
         >
           ← Retour
@@ -186,14 +216,14 @@ function StudyContent() {
 
           <div className="mt-8 flex gap-4">
             <Link
-              href={`/vocabulary/${listId}/test?profile=${profile}`}
-              className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-lg transition text-center"
+              href={`/vocabulary/${listId}/test?languageProfileId=${languageProfileId}&language=${language}`}
+              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition text-center"
             >
               Tester mes connaissances
             </Link>
             <button
               onClick={() => setShowAddForm(true)}
-              className="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-lg transition"
+              className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg transition"
             >
               + Ajouter des mots
             </button>
@@ -230,7 +260,7 @@ function StudyContent() {
                   <div className="flex gap-3 mt-6">
                     <button
                       type="submit"
-                      className="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-lg transition"
+                      className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-lg transition"
                     >
                       Ajouter
                     </button>
@@ -256,7 +286,7 @@ export default function StudyPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gradient-to-br from-blue-500 to-blue-600 p-4 flex items-center justify-center">
+        <div className="min-h-screen bg-gradient-to-br from-blue-300 to-blue-400 p-4 flex items-center justify-center">
           <p className="text-white text-xl">Chargement...</p>
         </div>
       }

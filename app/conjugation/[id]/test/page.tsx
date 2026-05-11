@@ -1,9 +1,10 @@
 'use client';
 
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useState, useEffect, Suspense } from 'react';
 import { conjugationLessons } from '@/app/utils/conjugationData';
+import { getToken } from '@/app/utils/auth';
 
 interface Question {
   id: string;
@@ -15,10 +16,18 @@ interface Question {
 }
 
 function ConjugationTestContent() {
+  const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
   const lessonId = params.id as string;
-  const profile = searchParams.get('profile') || 'User';
+  const languageProfileId = searchParams.get('languageProfileId');
+
+  useEffect(() => {
+    const token = getToken();
+    if (!token || !languageProfileId) {
+      router.push('/');
+    }
+  }, [languageProfileId, router]);
 
   const lesson = conjugationLessons.find(l => l.id === lessonId);
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -42,10 +51,10 @@ function ConjugationTestContent() {
 
   if (!lesson) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-500 to-purple-600 p-4">
+      <div className="min-h-screen bg-gradient-to-br from-violet-300 to-violet-400 p-4">
         <div className="max-w-2xl mx-auto text-center pt-12">
           <p className="text-white text-xl">Leçon non trouvée</p>
-          <Link href={`/conjugation?profile=${profile}`} className="text-purple-100 hover:text-white mt-4 block">
+          <Link href={`/conjugation?languageProfileId=${languageProfileId}`} className="text-purple-100 hover:text-white mt-4 block">
             ← Retour
           </Link>
         </div>
@@ -55,7 +64,7 @@ function ConjugationTestContent() {
 
   if (questions.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-500 to-purple-600 p-4 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-violet-300 to-violet-400 p-4 flex items-center justify-center">
         <div className="text-white text-xl">Chargement des exercices...</div>
       </div>
     );
@@ -87,10 +96,10 @@ function ConjugationTestContent() {
 
   if (testComplete) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-500 to-purple-600 p-4">
+      <div className="min-h-screen bg-gradient-to-br from-violet-300 to-violet-400 p-4">
         <div className="max-w-2xl mx-auto">
           <Link
-            href={`/conjugation/${lessonId}?profile=${profile}`}
+            href={`/conjugation/${lessonId}?languageProfileId=${languageProfileId}`}
             className="text-white mb-6 hover:text-purple-100 font-semibold inline-block"
           >
             ← Retour
@@ -117,7 +126,7 @@ function ConjugationTestContent() {
                 Refaire le test
               </button>
               <Link
-                href={`/conjugation/${lessonId}?profile=${profile}`}
+                href={`/conjugation/${lessonId}?languageProfileId=${languageProfileId}`}
                 className="block bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 rounded-lg transition text-center"
               >
                 Retour à la leçon
@@ -130,10 +139,10 @@ function ConjugationTestContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-500 to-purple-600 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-violet-300 to-violet-400 p-4">
       <div className="max-w-2xl mx-auto">
         <Link
-          href={`/conjugation/${lessonId}?profile=${profile}`}
+          href={`/conjugation/${lessonId}?languageProfileId=${languageProfileId}`}
           className="text-white mb-6 hover:text-purple-100 font-semibold inline-block"
         >
           ← Retour
@@ -227,7 +236,7 @@ function ConjugationTestContent() {
           {isAnswered && (
             <button
               onClick={handleNext}
-              className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-lg transition"
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg transition"
             >
               {currentIndex === questions.length - 1 ? 'Voir le résultat' : 'Suivant'}
             </button>
@@ -242,7 +251,7 @@ export default function ConjugationTestPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gradient-to-br from-purple-500 to-purple-600 p-4 flex items-center justify-center">
+        <div className="min-h-screen bg-gradient-to-br from-violet-300 to-violet-400 p-4 flex items-center justify-center">
           <p className="text-white text-xl">Chargement...</p>
         </div>
       }

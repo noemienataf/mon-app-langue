@@ -1,25 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import Link from 'next/link';
-import { login, isAuthenticated } from '@/app/utils/auth';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
-
-  // Vérifier si l'utilisateur est déjà connecté
-  useEffect(() => {
-    if (isAuthenticated()) {
-      router.push('/');
-    }
-    setIsCheckingAuth(false);
-  }, [router]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,91 +17,85 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      await login(email, password);
+      if (!username || !password) {
+        setError('Remplis username et password');
+        setLoading(false);
+        return;
+      }
+
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        setError(data.error || 'Erreur de connexion');
+        setLoading(false);
+        return;
+      }
+
+      // Sauvegarde le token et redirige
+      const data = await response.json();
+      localStorage.setItem('auth_token', data.token);
       router.push('/');
     } catch (err) {
-      setError((err as Error).message);
-    } finally {
+      setError('Erreur');
       setLoading(false);
     }
   };
 
-  if (isCheckingAuth) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50 flex items-center justify-center">
-        <p className="text-slate-600">Chargement...</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50 p-4">
-      <div className="max-w-md mx-auto pt-12">
-        <h1 className="text-slate-800 text-4xl font-bold text-center mb-2">
-          Apprendre l'hébreu
-        </h1>
-        <p className="text-slate-600 text-center mb-12">
-          Améliore ton vocabulaire, ta grammaire et tes conjugaisons
-        </p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-50 p-4 flex items-center justify-center">
+      <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
+        <h1 className="text-3xl font-bold text-purple-600 mb-2 text-center">Connexion</h1>
+        <p className="text-gray-600 text-center mb-6">Connecte-toi pour continuer</p>
 
-        <div className="bg-white rounded-xl shadow-lg p-8 border border-purple-100">
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 via-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
-            Connexion
-          </h2>
-
+        <form onSubmit={handleLogin} className="space-y-4">
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 text-red-700">
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
               {error}
             </div>
           )}
 
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block text-gray-700 font-semibold mb-2">
-                Email
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="ton@email.com"
-                className="w-full border border-purple-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
-                disabled={loading}
-              />
-            </div>
-
-            <div>
-              <label className="block text-gray-700 font-semibold mb-2">
-                Mot de passe
-              </label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full border border-purple-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400"
-                disabled={loading}
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading || !email || !password}
-              className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 disabled:opacity-50 text-white font-bold py-2 rounded-lg transition"
-            >
-              {loading ? 'Connexion en cours...' : 'Se connecter'}
-            </button>
-          </form>
-
-          <div className="border-t border-purple-100 pt-6 mt-6">
-            <p className="text-slate-600 text-center text-sm">
-              Pas de compte ?{' '}
-              <Link href="/auth/signup" className="text-purple-600 font-semibold hover:text-purple-700">
-                Créer un compte
-              </Link>
-            </p>
+          <div>
+            <label className="block text-gray-700 font-semibold mb-2">Username</label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Ton nom d'utilisateur"
+              className="w-full border-2 border-gray-300 rounded px-3 py-2 text-lg focus:outline-none focus:border-purple-500"
+            />
           </div>
-        </div>
+
+          <div>
+            <label className="block text-gray-700 font-semibold mb-2">Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Ton mot de passe"
+              className="w-full border-2 border-gray-300 rounded px-3 py-2 text-lg focus:outline-none focus:border-purple-500"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-violet-600 hover:bg-violet-700 disabled:bg-gray-400 text-white font-bold py-2 rounded-lg transition"
+          >
+            {loading ? 'Connexion en cours...' : 'Connexion'}
+          </button>
+        </form>
+
+        <p className="text-gray-600 text-center mt-6">
+          Pas encore de compte?{' '}
+          <Link href="/auth/signup" className="text-purple-600 hover:text-purple-700 font-semibold">
+            Inscris-toi
+          </Link>
+        </p>
       </div>
     </div>
   );

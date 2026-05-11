@@ -1,16 +1,25 @@
 'use client';
 
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useState, useEffect, Suspense } from 'react';
 import { conjugationLessons } from '@/app/utils/conjugationData';
 import { exerciseMetadata, binyanExerciseMetadata, gizraExerciseMetadata } from '@/app/utils/conjugationExercisesData';
+import { getToken } from '@/app/utils/auth';
 
 function ExercisesListContent() {
+  const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
   const lessonId = params.id as string;
-  const profile = searchParams.get('profile') || 'User';
+  const languageProfileId = searchParams.get('languageProfileId');
+
+  useEffect(() => {
+    const token = getToken();
+    if (!token || !languageProfileId) {
+      router.push('/');
+    }
+  }, [languageProfileId, router]);
 
   const lesson = conjugationLessons.find(l => l.id === lessonId);
   const [masteredExercises, setMasteredExercises] = useState<Set<string>>(new Set());
@@ -33,16 +42,25 @@ function ExercisesListContent() {
     : exerciseMetadata.filter(ex => ex.tense === getTense());
 
   useEffect(() => {
-    if (profile) {
+    if (languageProfileId) {
       fetchMasteredExercises();
     } else {
       setLoading(false);
     }
-  }, [profile]);
+  }, [languageProfileId]);
 
   const fetchMasteredExercises = async () => {
     try {
-      const response = await fetch(`/api/mastery/exercises?profileId=${profile}`);
+      const token = getToken();
+      if (!token || !languageProfileId) return;
+
+      const response = await fetch(
+        `/api/mastery/exercises?languageProfileId=${languageProfileId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (!response.ok) throw new Error('Erreur lors du chargement');
+
       const exos = await response.json();
       setMasteredExercises(new Set(exos));
     } catch (error) {
@@ -56,8 +74,9 @@ function ExercisesListContent() {
     e.preventDefault();
     e.stopPropagation();
 
-    if (!profile) return;
+    if (!languageProfileId) return;
 
+    const token = getToken();
     const newMastered = new Set(masteredExercises);
 
     try {
@@ -65,16 +84,22 @@ function ExercisesListContent() {
         // Retirer de la maîtrise
         await fetch('/api/mastery/exercises', {
           method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ profileId: profile, exerciseId }),
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ languageProfileId, exerciseId }),
         });
         newMastered.delete(exerciseId);
       } else {
         // Ajouter à la maîtrise
         await fetch('/api/mastery/exercises', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ profileId: profile, exerciseId }),
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ languageProfileId, exerciseId }),
         });
         newMastered.add(exerciseId);
       }
@@ -87,7 +112,7 @@ function ExercisesListContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-500 to-purple-600 p-4 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-violet-300 to-violet-400 p-4 flex items-center justify-center">
         <p className="text-white text-xl">Chargement...</p>
       </div>
     );
@@ -95,10 +120,10 @@ function ExercisesListContent() {
 
   if (!lesson) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-500 to-purple-600 p-4">
+      <div className="min-h-screen bg-gradient-to-br from-violet-300 to-violet-400 p-4">
         <div className="max-w-2xl mx-auto text-center pt-12">
           <p className="text-white text-xl">Leçon non trouvée</p>
-          <Link href={`/conjugation?profile=${profile}`} className="text-purple-100 hover:text-white mt-4 block">
+          <Link href={`/conjugation?languageProfileId=${languageProfileId}`} className="text-purple-100 hover:text-white mt-4 block">
             ← Retour
           </Link>
         </div>
@@ -107,10 +132,10 @@ function ExercisesListContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-500 to-purple-600 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-violet-300 to-violet-400 p-4">
       <div className="max-w-2xl mx-auto">
         <Link
-          href={`/conjugation/${lessonId}?profile=${profile}`}
+          href={`/conjugation/${lessonId}?languageProfileId=${languageProfileId}`}
           className="text-white mb-6 hover:text-purple-100 font-semibold inline-block"
         >
           ← Retour
@@ -126,7 +151,7 @@ function ExercisesListContent() {
               className="relative group"
             >
               <Link
-                href={`/conjugation/${lessonId}/exercises/${exercise.id}?profile=${profile}`}
+                href={`/conjugation/${lessonId}/exercises/${exercise.id}?languageProfileId=${languageProfileId}`}
                 className="bg-white rounded-lg shadow-md hover:shadow-lg hover:scale-102 transition block p-6 pr-14 flex flex-col border border-purple-100"
               >
                 <h3 className="text-lg font-bold text-purple-700 mb-2">{exercise.title}</h3>
@@ -156,7 +181,7 @@ export default function ExercisesListPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gradient-to-br from-purple-500 to-purple-600 p-4 flex items-center justify-center">
+        <div className="min-h-screen bg-gradient-to-br from-violet-300 to-violet-400 p-4 flex items-center justify-center">
           <p className="text-white text-xl">Chargement...</p>
         </div>
       }

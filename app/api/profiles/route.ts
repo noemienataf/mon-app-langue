@@ -7,7 +7,6 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-producti
 const AVAILABLE_LANGUAGES = [
   { code: 'hebrew', name: 'Hébreu', flag: '🇮🇱' },
   { code: 'portuguese', name: 'Portugais', flag: '🇧🇷' },
-  { code: 'spanish', name: 'Espagnol', flag: '🇪🇸' },
 ];
 
 // GET - Liste des langues disponibles

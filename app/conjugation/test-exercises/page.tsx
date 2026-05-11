@@ -60,7 +60,7 @@ export default function TestExercisesPage() {
     : userAnswer === String(currentExercise.options?.indexOf(currentExercise.correctAnswer));
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-500 to-purple-600 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-violet-300 to-violet-400 p-4">
       <div className="max-w-2xl mx-auto">
         <h1 className="text-white text-3xl font-bold mb-6 text-center">Test des Exercices de Conjugaison</h1>
 
@@ -195,7 +195,7 @@ export default function TestExercisesPage() {
             <button
               onClick={handleNext}
               disabled={currentIndex === exercises.length - 1 || !showAnswer}
-              className="flex-1 bg-green-500 hover:bg-green-600 disabled:bg-gray-300 text-white font-bold py-2 rounded-lg transition"
+              className="flex-1 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 text-white font-bold py-2 rounded-lg transition"
             >
               Suivant
             </button>
