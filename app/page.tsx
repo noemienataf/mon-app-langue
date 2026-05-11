@@ -18,7 +18,7 @@ interface LanguageProfile {
 
 const LANGUAGES = [
   { code: 'hebrew', name: 'Hébreu', flag: '🇮🇱' },
-  { code: 'portuguese', name: 'Portugais', flag: '🇧🇷' },
+  { code: 'portuguese', name: 'Portugais', flag: '🇵🇹' },
 ];
 
 export default function Home() {
@@ -235,6 +235,21 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {LANGUAGES.map(lang => {
               const isEnrolled = userLanguages.some(ul => ul.language === lang.code);
+
+              // Show "Coming soon" for Portuguese
+              if (lang.code === 'portuguese') {
+                return (
+                  <div
+                    key={lang.code}
+                    className="bg-white rounded-xl shadow-md text-left p-8 border-2 border-purple-200 opacity-75"
+                  >
+                    <div className="text-5xl mb-4">{lang.flag}</div>
+                    <h2 className="text-2xl font-bold text-purple-700 mb-4">{lang.name}</h2>
+                    <p className="text-purple-600 font-semibold">Coming soon 🚀</p>
+                  </div>
+                );
+              }
+
               return (
                 <button
                   key={lang.code}
@@ -250,9 +265,6 @@ export default function Home() {
                 >
                   <div className="text-5xl mb-4">{lang.flag}</div>
                   <h2 className="text-2xl font-bold text-purple-700 mb-2">{lang.name}</h2>
-                  {isEnrolled && (
-                    <p className="text-green-600 text-sm font-semibold">✓ Déjà inscrit</p>
-                  )}
                 </button>
               );
             })}
@@ -263,6 +275,28 @@ export default function Home() {
   }
 
   if (screen === 'category') {
+    // Show "Coming soon" for Portuguese
+    if (currentLanguageProfile?.language === 'portuguese') {
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50 p-4">
+          <div className="max-w-4xl mx-auto pt-8">
+            <button
+              onClick={() => setScreen('language')}
+              className="text-purple-600 hover:text-purple-900 mb-8 font-semibold inline-block"
+            >
+              ← Changer de langue
+            </button>
+
+            <div className="bg-white rounded-lg shadow-lg p-12 text-center">
+              <h1 className="text-slate-800 text-4xl font-bold mb-2">Portugais</h1>
+              <p className="text-slate-600 text-xl font-semibold mt-6">Coming soon 🚀</p>
+              <p className="text-gray-600 mt-4">Cette langue sera bientôt disponible</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50 p-4">
         <div className="max-w-4xl mx-auto pt-8">
@@ -298,7 +332,7 @@ export default function Home() {
             </button>
 
             <Link
-              href={`/grammar?languageProfileId=${currentLanguageProfile?.id}`}
+              href={`/grammar?languageProfileId=${currentLanguageProfile?.id}&language=${currentLanguageProfile?.language}`}
               className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-md hover:shadow-xl hover:scale-105 transition text-center p-8 border-2 border-blue-200 hover:border-blue-400"
             >
               <div className="text-5xl mb-4">✏️</div>
@@ -307,7 +341,7 @@ export default function Home() {
             </Link>
 
             <Link
-              href={`/conjugation?languageProfileId=${currentLanguageProfile?.id}`}
+              href={`/conjugation?languageProfileId=${currentLanguageProfile?.id}&language=${currentLanguageProfile?.language}`}
               className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl shadow-md hover:shadow-xl hover:scale-105 transition text-center p-8 border-2 border-purple-200 hover:border-purple-400"
             >
               <div className="text-5xl mb-4">🔄</div>

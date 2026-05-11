@@ -10,6 +10,7 @@ function ConjugationContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const languageProfileId = searchParams.get('languageProfileId');
+  const language = searchParams.get('language') || 'hebrew';
   const [masteredLessons, setMasteredLessons] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -84,6 +85,28 @@ function ConjugationContent() {
       console.error('Erreur lors de la mise à jour de la maîtrise:', error);
     }
   };
+
+  // Show "Coming soon" for non-Hebrew languages
+  if (language !== 'hebrew') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-100 to-purple-200 p-4">
+        <div className="max-w-4xl mx-auto pt-8">
+          <Link
+            href="/"
+            className="text-purple-700 mb-6 hover:text-purple-900 font-semibold inline-block"
+          >
+            ← Retour
+          </Link>
+
+          <div className="bg-white rounded-lg shadow-lg p-12 text-center">
+            <h1 className="text-purple-900 text-3xl font-bold mb-4">Conjugaison</h1>
+            <p className="text-purple-600 text-xl font-semibold">Coming soon 🚀</p>
+            <p className="text-gray-600 mt-4">Cette section sera bientôt disponible pour cette langue</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
