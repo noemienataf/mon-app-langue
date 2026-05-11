@@ -1,82 +1,115 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { vocabularyLists } from './utils/vocabularyData';
-import { getCustomLists, addCustomList, deleteCustomList, getAllVocabularyLists, CustomList } from './utils/customLists';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-
-interface Profile {
-  id: string;
-  name: string;
-}
+import { vocabularyLists } from './utils/vocabularyData';
+import { getCustomLists, getAllVocabularyLists, CustomList } from './utils/customLists';
+import { getToken, getCurrentLanguageProfile, setCurrentLanguageProfile, logout } from './utils/auth';
 
 interface ListWordCount {
   [key: string]: number;
 }
 
+interface LanguageProfile {
+  id: string;
+  language: string;
+}
+
+const LANGUAGES = [
+  { code: 'hebrew', name: 'Hébreu', flag: '🇮🇱' },
+  { code: 'portuguese', name: 'Portugais', flag: '🇧🇷' },
+  { code: 'spanish', name: 'Espagnol', flag: '🇪🇸' },
+];
+
 export default function Home() {
-  const [screen, setScreen] = useState<'profile' | 'category' | 'vocabulary'>('profile');
-  const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
+  const router = useRouter();
+  const [screen, setScreen] = useState<'loading' | 'language' | 'category' | 'vocabulary'>('loading');
+  const [currentLanguageProfile, setCurrentLanguageProfileLocal] = useState<LanguageProfile | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<'vocabulary' | 'grammar' | 'conjugation' | null>(null);
-  const [profiles, setProfiles] = useState<Profile[]>([]);
-  const [newProfileName, setNewProfileName] = useState('');
+  const [userLanguages, setUserLanguages] = useState<LanguageProfile[]>([]);
   const [wordCounts, setWordCounts] = useState<ListWordCount>({});
   const [lists, setLists] = useState<CustomList[]>(vocabularyLists);
-  const [showAddListForm, setShowAddListForm] = useState(false);
-  const [newListName, setNewListName] = useState('');
-  const [newListDescription, setNewListDescription] = useState('');
   const [masteredVocabLists, setMasteredVocabLists] = useState<Set<string>>(new Set());
-  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string>('');
 
-  // Charger les profils depuis Supabase
+  // Vérifier l'authentification au chargement
   useEffect(() => {
-    fetchProfiles();
-    loadLists();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    const token = getToken();
+    if (!token) {
+      router.push('/auth/login');
+      return;
+    }
 
-  const fetchProfiles = async () => {
+    // Charger les profils de langue de l'utilisateur
+    fetchUserLanguages();
+  }, [router]);
+
+  const fetchUserLanguages = async () => {
     try {
-      const response = await fetch('/api/profiles');
-      const data = await response.json();
-      setProfiles(data);
-      setLoading(false);
+      const token = getToken();
+      if (!token) return;
+
+      const response = await fetch('/api/profiles/user', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!response.ok) throw new Error('Failed to fetch user languages');
+
+      const languages = await response.json();
+      setUserLanguages(languages);
+
+      // Vérifier si une langue était déjà sélectionnée
+      const savedProfileId = getCurrentLanguageProfile();
+      if (savedProfileId && languages.some((l: LanguageProfile) => l.id === savedProfileId)) {
+        selectLanguage(languages.find((l: LanguageProfile) => l.id === savedProfileId));
+      } else {
+        setScreen('language');
+      }
     } catch (error) {
-      console.error('Erreur lors du chargement des profils:', error);
-      setLoading(false);
+      console.error('Erreur lors du chargement des langues:', error);
+      setError('Erreur lors du chargement');
+      setScreen('language');
     }
   };
 
-  const loadLists = async () => {
+  const selectLanguage = async (language: LanguageProfile) => {
+    setCurrentLanguageProfileLocal(language);
+    setCurrentLanguageProfile(language.id);
+
+    // Charger les listes et la maîtrise du vocabulaire
     const allLists = getAllVocabularyLists(vocabularyLists);
     setLists(allLists);
 
     const counts: ListWordCount = {};
+    const token = getToken();
 
-    // Charger le comptage de mots pour chaque liste (défaut + personnalisés depuis Supabase)
     for (const list of allLists) {
       try {
         const defaultCount = list.words.length;
-        const response = await fetch(`/api/vocabulary/words?listId=${list.id}`);
+        const response = await fetch(
+          `/api/vocabulary/words?listId=${list.id}&languageProfileId=${language.id}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
         const customWords = await response.json();
-        const customCount = customWords.length || 0;
+        const customCount = Array.isArray(customWords) ? customWords.length : 0;
         counts[list.id] = defaultCount + customCount;
       } catch (error) {
-        // Si l'API échoue, utiliser juste le comptage par défaut
         counts[list.id] = list.words.length;
       }
     }
-
     setWordCounts(counts);
-  };
 
-  const handleSelectProfile = async (profile: Profile) => {
-    setSelectedProfile(profile);
-
-    // Charger la maîtrise du vocabulaire pour ce profil
+    // Charger la maîtrise du vocabulaire
     try {
-      const response = await fetch(`/api/mastery/vocabulary?profileId=${profile.id}`);
-      const masteredLists = await response.json();
-      setMasteredVocabLists(new Set(masteredLists));
+      const response = await fetch(
+        `/api/mastery/vocabulary?languageProfileId=${language.id}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (response.ok) {
+        const masteredLists = await response.json();
+        setMasteredVocabLists(new Set(masteredLists));
+      }
     } catch (error) {
       console.error('Erreur lors du chargement de la maîtrise:', error);
     }
@@ -84,79 +117,83 @@ export default function Home() {
     setScreen('category');
   };
 
+  const createOrSelectLanguage = async (language: string) => {
+    try {
+      const token = getToken();
+      const response = await fetch('/api/profiles/user/language', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ language }),
+      });
+
+      if (!response.ok) throw new Error('Failed to select language');
+
+      const newLanguage: LanguageProfile = await response.json();
+      setUserLanguages([...userLanguages, newLanguage]);
+      selectLanguage(newLanguage);
+    } catch (error) {
+      console.error('Erreur lors de la sélection de la langue:', error);
+      setError('Erreur lors de la sélection');
+    }
+  };
+
   const handleSelectCategory = (category: 'vocabulary' | 'grammar' | 'conjugation') => {
     setSelectedCategory(category);
     setScreen('vocabulary');
-  };
-
-  const handleAddProfile = async () => {
-    if (newProfileName.trim() && selectedProfile === null) {
-      try {
-        const response = await fetch('/api/profiles', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: newProfileName }),
-        });
-        const newProfile = await response.json();
-        setProfiles([...profiles, newProfile]);
-        setNewProfileName('');
-      } catch (error) {
-        console.error('Erreur lors de la création du profil:', error);
-      }
-    }
-  };
-
-  const handleAddList = () => {
-    if (newListName.trim() && newListDescription.trim()) {
-      addCustomList(newListName, newListDescription);
-      setNewListName('');
-      setNewListDescription('');
-      setShowAddListForm(false);
-      loadLists();
-    }
-  };
-
-  const handleDeleteList = (listId: string) => {
-    if (confirm('Supprimer cette liste et tous ses mots ?')) {
-      deleteCustomList(listId);
-      loadLists();
-    }
   };
 
   const toggleVocabMastery = async (listId: string, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
-    if (!selectedProfile) return;
+    if (!currentLanguageProfile) return;
 
+    const token = getToken();
     const newMastered = new Set(masteredVocabLists);
 
     try {
       if (newMastered.has(listId)) {
-        // Retirer de la maîtrise
         await fetch('/api/mastery/vocabulary', {
           method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ profileId: selectedProfile.id, listId }),
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            languageProfileId: currentLanguageProfile.id,
+            listId,
+          }),
         });
         newMastered.delete(listId);
       } else {
-        // Ajouter à la maîtrise
         await fetch('/api/mastery/vocabulary', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ profileId: selectedProfile.id, listId }),
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            languageProfileId: currentLanguageProfile.id,
+            listId,
+          }),
         });
         newMastered.add(listId);
       }
-
       setMasteredVocabLists(newMastered);
     } catch (error) {
       console.error('Erreur lors de la mise à jour de la maîtrise:', error);
     }
   };
 
-  if (loading) {
+  const handleLogout = async () => {
+    await logout();
+    router.push('/auth/login');
+  };
+
+  if (screen === 'loading') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50 flex items-center justify-center">
         <p className="text-slate-600">Chargement...</p>
@@ -164,47 +201,50 @@ export default function Home() {
     );
   }
 
-  if (screen === 'profile') {
+  if (screen === 'language') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50 p-4">
-        <div className="max-w-md mx-auto pt-12">
-          <h1 className="text-slate-800 text-4xl font-bold text-center mb-2">Apprendre l'hébreu</h1>
-          <p className="text-slate-600 text-center mb-12">Améliore ton vocabulaire, ta grammaire et tes conjugaisons</p>
+        <div className="max-w-2xl mx-auto pt-8">
+          <div className="flex justify-between items-start mb-8">
+            <h1 className="text-slate-800 text-4xl font-bold">Quelle langue veux-tu apprendre ?</h1>
+            <button
+              onClick={handleLogout}
+              className="text-slate-600 hover:text-slate-900 font-semibold text-sm px-4 py-2 rounded border border-slate-300 hover:border-slate-500"
+            >
+              Déconnexion
+            </button>
+          </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-8 mb-6 border border-purple-100">
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 via-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">Sélectionne un profil</h2>
-
-            <div className="space-y-3 mb-6">
-              {profiles.map(profile => (
-                <button
-                  key={profile.id}
-                  onClick={() => handleSelectProfile(profile)}
-                  className="w-full bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white font-semibold py-3 rounded-lg transition shadow-md hover:shadow-lg transform hover:scale-105"
-                >
-                  {profile.name}
-                </button>
-              ))}
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 text-red-700">
+              {error}
             </div>
+          )}
 
-            <div className="border-t border-purple-100 pt-6">
-              <p className="text-slate-600 text-sm mb-3 font-medium">Ou crée un nouveau profil :</p>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={newProfileName}
-                  onChange={e => setNewProfileName(e.target.value)}
-                  placeholder="Nom du profil"
-                  className="flex-1 border border-purple-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400"
-                  onKeyPress={e => e.key === 'Enter' && handleAddProfile()}
-                />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {LANGUAGES.map(lang => {
+              const isEnrolled = userLanguages.some(ul => ul.language === lang.code);
+              return (
                 <button
-                  onClick={handleAddProfile}
-                  className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-bold px-4 py-2 rounded-lg transition shadow-md hover:shadow-lg"
+                  key={lang.code}
+                  onClick={() => {
+                    if (isEnrolled) {
+                      const profile = userLanguages.find(ul => ul.language === lang.code);
+                      if (profile) selectLanguage(profile);
+                    } else {
+                      createOrSelectLanguage(lang.code);
+                    }
+                  }}
+                  className="bg-white rounded-xl shadow-md hover:shadow-lg hover:scale-105 transition text-left p-8 border-2 border-purple-200 hover:border-purple-400"
                 >
-                  +
+                  <div className="text-5xl mb-4">{lang.flag}</div>
+                  <h2 className="text-2xl font-bold text-purple-700 mb-2">{lang.name}</h2>
+                  {isEnrolled && (
+                    <p className="text-green-600 text-sm font-semibold">✓ Déjà inscrit</p>
+                  )}
                 </button>
-              </div>
-            </div>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -215,18 +255,28 @@ export default function Home() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-purple-50 p-4">
         <div className="max-w-4xl mx-auto pt-8">
-          <button
-            onClick={() => setScreen('profile')}
-            className="text-purple-600 hover:text-purple-900 mb-6 font-semibold inline-block"
-          >
-            ← Changer de profil
-          </button>
+          <div className="flex justify-between items-start mb-8">
+            <div>
+              <button
+                onClick={() => setScreen('language')}
+                className="text-purple-600 hover:text-purple-900 mb-4 font-semibold inline-block"
+              >
+                ← Changer de langue
+              </button>
+              <h1 className="text-slate-800 text-4xl font-bold mb-1">
+                Apprendre le {currentLanguageProfile?.language === 'hebrew' ? 'Hébreu' : currentLanguageProfile?.language === 'portuguese' ? 'Portugais' : 'Espagnol'}
+              </h1>
+              <p className="text-slate-600 text-lg">Que veux-tu apprendre ?</p>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="text-slate-600 hover:text-slate-900 font-semibold text-sm px-4 py-2 rounded border border-slate-300 hover:border-slate-500"
+            >
+              Déconnexion
+            </button>
+          </div>
 
-          <h1 className="text-slate-800 text-4xl font-bold mb-1">Bienvenue, {selectedProfile?.name} !</h1>
-          <p className="text-slate-600 mb-12 text-lg">Que veux-tu apprendre ?</p>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Vocabulaire */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
             <button
               onClick={() => handleSelectCategory('vocabulary')}
               className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl shadow-md hover:shadow-xl hover:scale-105 transition text-center p-8 border-2 border-emerald-200 hover:border-emerald-400"
@@ -236,9 +286,8 @@ export default function Home() {
               <p className="text-emerald-600">Apprends des mots et des expressions</p>
             </button>
 
-            {/* Grammaire */}
             <Link
-              href={`/grammar?profile=${selectedProfile?.id}`}
+              href={`/grammar?languageProfileId=${currentLanguageProfile?.id}`}
               className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-md hover:shadow-xl hover:scale-105 transition text-center p-8 border-2 border-blue-200 hover:border-blue-400"
             >
               <div className="text-5xl mb-4">✏️</div>
@@ -246,9 +295,8 @@ export default function Home() {
               <p className="text-blue-600">Apprends les bases de la langue</p>
             </Link>
 
-            {/* Conjugaison */}
             <Link
-              href={`/conjugation?profile=${selectedProfile?.id}`}
+              href={`/conjugation?languageProfileId=${currentLanguageProfile?.id}`}
               className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl shadow-md hover:shadow-xl hover:scale-105 transition text-center p-8 border-2 border-purple-200 hover:border-purple-400"
             >
               <div className="text-5xl mb-4">🔄</div>
@@ -261,6 +309,7 @@ export default function Home() {
     );
   }
 
+  // Vocabulary/Study screen
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-100 to-emerald-200 p-4">
       <div className="max-w-4xl mx-auto pt-8">
@@ -278,7 +327,7 @@ export default function Home() {
           {lists.map(list => (
             <div key={list.id} className="relative group">
               <Link
-                href={`/vocabulary/${list.id}/study?profile=${selectedProfile?.id}`}
+                href={`/vocabulary/${list.id}/study?languageProfileId=${currentLanguageProfile?.id}`}
                 className="bg-white rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition block p-4 pr-12 h-36 flex flex-col border border-emerald-100"
               >
                 <h3 className="text-sm font-bold text-emerald-700 mb-1">{list.name}</h3>
@@ -297,72 +346,9 @@ export default function Home() {
               >
                 ✓
               </button>
-
-              {list.custom && (
-                <button
-                  onClick={() => handleDeleteList(list.id)}
-                  className="absolute bottom-3 right-3 bg-red-500 hover:bg-red-600 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition"
-                >
-                  ✕
-                </button>
-              )}
             </div>
           ))}
-
-          {/* Carte pour ajouter une nouvelle liste */}
-          <button
-            onClick={() => setShowAddListForm(true)}
-            className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition flex flex-col items-center justify-center h-36 border-2 border-dashed border-emerald-400"
-          >
-            <div className="text-3xl text-emerald-600 mb-1">+</div>
-            <p className="text-emerald-700 text-xs font-semibold text-center">Nouvelle liste</p>
-          </button>
         </div>
-
-        {/* Formulaire pour ajouter une nouvelle liste */}
-        {showAddListForm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
-            <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md my-8">
-              <h2 className="text-2xl font-bold text-blue-600 mb-6">Créer une nouvelle liste</h2>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-gray-700 font-semibold mb-2">Nom de la liste</label>
-                  <input
-                    type="text"
-                    value={newListName}
-                    onChange={e => setNewListName(e.target.value)}
-                    placeholder="Ex: Animaux"
-                    className="w-full border-2 border-gray-300 rounded px-3 py-2"
-                  />
-                </div>
-                <div>
-                  <label className="block text-gray-700 font-semibold mb-2">Description</label>
-                  <input
-                    type="text"
-                    value={newListDescription}
-                    onChange={e => setNewListDescription(e.target.value)}
-                    placeholder="Ex: Noms d'animaux en hébreu"
-                    className="w-full border-2 border-gray-300 rounded px-3 py-2"
-                  />
-                </div>
-                <div className="flex gap-3 mt-6">
-                  <button
-                    onClick={handleAddList}
-                    className="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-2 rounded-lg transition"
-                  >
-                    Créer
-                  </button>
-                  <button
-                    onClick={() => setShowAddListForm(false)}
-                    className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 rounded-lg transition"
-                  >
-                    Annuler
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
