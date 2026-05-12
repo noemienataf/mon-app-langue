@@ -349,14 +349,14 @@ export default function Home() {
               <p className="text-purple-600">Apprends à conjuguer les verbes</p>
             </Link>
 
-            <button
-              onClick={() => handleSelectCategory('reading')}
+            <Link
+              href={`/reading?languageProfileId=${currentLanguageProfile?.id}&language=${currentLanguageProfile?.language}`}
               className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl shadow-md hover:shadow-xl hover:scale-105 transition text-center p-8 border-2 border-orange-200 hover:border-orange-400"
             >
               <div className="text-5xl mb-4">📖</div>
               <h2 className="text-2xl font-bold text-orange-700 mb-2">Contenu à lire</h2>
               <p className="text-orange-600">Lis des articles et histoires</p>
-            </button>
+            </Link>
           </div>
         </div>
       </div>
