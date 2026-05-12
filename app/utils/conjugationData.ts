@@ -26,7 +26,7 @@ export const conjugationLessons: ConjugationLesson[] = [
   {
     id: 'present-tense',
     title: 'Conjugaison au Présent',
-    description: 'Apprendre à conjuguer les verbes au temps présent (Hové)',
+    description: 'Conjuguer au présent (Hové)',
     explanation: "Le présent en hébreu (Hové) s'utilise pour parler des actions qui se déroulent maintenant. Les verbes réguliers au présent changent selon le sujet (personne et genre).\n\n**Structure générale**: Le verbe change sa forme selon qui l'effectue:\n- 1ère personne singulier/pluriel\n- 2ème personne singulier/pluriel (avec distinction masculin/féminin)\n- 3ème personne singulier/pluriel (avec distinction masculin/féminin)\n\n**Exemple avec \"étudier\" (limad)**: Les formes changent complètement pour chaque personne, ce qui est différent du français.",
     examples: [
       {
@@ -112,7 +112,7 @@ export const conjugationLessons: ConjugationLesson[] = [
   {
     id: 'past-tense',
     title: 'Conjugaison au Passé',
-    description: 'Apprendre à conjuguer les verbes au temps passé (Avar)',
+    description: 'Conjuguer au passé (Avar)',
     explanation: "Le passé en hébreu (Avar) s'utilise pour parler des actions qui sont déjà terminées. La conjugaison au passé est généralement plus régulière que celle du présent.\n\n**Caractéristiques du passé**:\n- Les suffixes s'ajoutent à la racine du verbe\n- Le passé change selon la personne et le genre\n- Pour les verbes réguliers, on ajoute des suffixes standardisés\n\n**Exemple avec \"parler\" (diber)**: La racine \"d-b-r\" reçoit des suffixes selon le sujet.",
     examples: [
       {
@@ -198,7 +198,7 @@ export const conjugationLessons: ConjugationLesson[] = [
   {
     id: 'future-tense',
     title: 'Conjugaison au Futur',
-    description: 'Apprendre à conjuguer les verbes au temps futur (Atid)',
+    description: 'Conjuguer au futur (Atid)',
     explanation: "Le futur en hébreu (Atid) s'utilise pour parler des actions qui n'ont pas encore eu lieu.\n\n**Caractéristiques du futur**:\n- Utilise des préfixes (prépositions attachées au verbe)\n- Change selon la personne et le genre\n- Les formes sont souvent différentes du présent\n\n**Préfixes du futur**:\n- י (y) pour 3ème personne masculine\n- ת (t) pour 2ème personne et 3ème personne féminine\n- א (a) pour 1ère personne\n- נ (n) pour 1ère personne pluriel",
     examples: [
       {
@@ -284,7 +284,7 @@ export const conjugationLessons: ConjugationLesson[] = [
   {
     id: 'binyanim',
     title: 'Les Binyanim (Structures verbales)',
-    description: 'Les 7 moules de conjugaison qui créent différents sens à partir d\'une même racine',
+    description: 'Les 7 moules de conjugaison',
     explanation: "**Le concept fondamental**: En hébreu, presque tous les verbes sont construits sur une racine de 3 lettres consonnes. Cette racine porte le sens général, et on l'\"habille\" dans différents moules (binyanim) pour créer différents verbes avec des nuances de sens.\n\nExemple avec ל-מ-ד (l-m-d = apprendre):\n- **לָמַד** (lamad) = il a appris\n- **לִמֵּד** (limed) = il a enseigné (= fait apprendre)\n- **הִתְלַמֵּד** (hitlamed) = il a fait un apprentissage / s'est formé\n\n**Les binyanim vont par paires actif/passif**: Pa'al↔Nif'al, Pi'el↔Pu'al, Hif'il↔Huf'al. Hitpa'el est à part (réflexif).\n\n**Reconnaissance rapide** - Tu peux identifier un binyan juste en regardant les préfixes/voyelles:\n- **Voyelles a-a, aucun préfixe** = Pa'al (passé)\n- **Préfixe נ־** = Nif'al\n- **Voyelles i-e + dagesh au milieu** = Pi'el\n- **Voyelles u-a** = Pu'al\n- **Préfixe הִ + voyelle i** = Hif'il\n- **Préfixe הֻ** = Huf'al\n- **Préfixe הִתְ / מִתְ / לְהִתְ** = Hitpa'el",
     examples: [
       {
@@ -364,7 +364,7 @@ export const conjugationLessons: ConjugationLesson[] = [
   {
     id: 'verb-groups',
     title: 'Groupes de Verbes (Gizra)',
-    description: 'Classification des verbes selon leur racine - comprendre comment cela affecte la conjugaison',
+    description: 'Classification des verbes',
     explanation: "**Gizra** (גִּזְרָה = groupe/classification) - Les verbes sont classifiés selon le type de lettres dans leur racine.\n\n**Importance**: Certaines lettres \"faibles\" (י, ו, נ) ou \"gutturales\" (ה, ע, ח, ר) changent les voyelles ou se comportent différemment en conjugaison. Comprendre le groupe d'un verbe aide à prévoir ses modifications.\n\n**Les principaux groupes**:\n\n1. **Verbes réguliers (Sholem/Shaleim)** - Trois consonnes \"fortes\"\n   - Pas de modifications en conjugaison\n   - Exemple: שׁמר (shamar = garder), דבר (davar = parler), קטל (katal = tuer)\n\n2. **Verbes avec gutturales** - Contiennent ה, ע, ח, ר\n   - Ces lettres \"mangent\" les voyelles muettes ou les changent\n   - Exemple: עזר (azar = aider), שׁאל (shaal = demander), רחץ (rahatz = laver)\n   - Changement typique: les voyelles seront légèrement modifiées\n\n3. **Verbes faibles (אָ, י, ו, נ)** - Une des lettres se transforme ou disparaît\n   - **אָ-faibles**: נתן (natan = donner) - le alef disparaît en conjugaison\n   - **י-faibles**: יתר (yatar = rester) - le yud peut se transformer\n   - **ו-faibles**: ובד (vad = travailler) - le vav peut disparaître\n   - **נ-faibles**: נשׁר (nashar = tomber) - le nun peut se transformer\n   - Changement typique: la lettre faible change d'aspect selon le temps\n\n4. **Verbes doublés (Gemination)** - Deux racines identiques (P=L)\n   - Exemple: סבב (savav = tourner), לקק (lakak = lécher), קלל (kalal = maudire)\n   - Changement typique: au présent et futur, la lettre peut se diviser ou se transformer\n\n5. **Verbes très faibles** - Plusieurs lettres faibles ou combinaisons complexes\n   - Exemple: בוא (bo = venir), יאכל (ya'akhal = manger avec א et י)\n   - Changements importants selon le binyan et le temps",
     examples: [
       {
