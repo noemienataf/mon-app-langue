@@ -1,7 +1,9 @@
 export interface Word {
   id: string;
-  hebrew: string;
+  hebrew?: string;
   hebrewWithVowels?: string;
+  portuguese?: string;
+  portuguese_br?: string;
   french: string;
   isCustom?: boolean;
 }
@@ -13,7 +15,8 @@ export interface VocabularyList {
   words: Word[];
 }
 
-export const vocabularyLists: VocabularyList[] = [
+// HEBREW VOCABULARY LISTS
+export const vocabularyListsHebrew: VocabularyList[] = [
   {
     id: 'maison',
     name: 'Maison & Habitat',
@@ -102,7 +105,7 @@ export const vocabularyLists: VocabularyList[] = [
       { id: '17', hebrew: 'בעל', hebrewWithVowels: 'בַּעַל', french: 'Mari/Époux' },
       { id: '18', hebrew: 'אישה', hebrewWithVowels: 'אִשָּׁה', french: 'Femme/Épouse' },
       { id: '19', hebrew: 'ילד/ילדה', hebrewWithVowels: 'יֶלֶד/יַלְדָּה', french: 'Enfant' },
-      { id: '20', hebrew: 'חמי/חמות', hebrewWithVowels: 'חָמִי/חָמוֹת', french: 'Beau-père/mère' },
+      { id: '20', hebrew: 'חמי/חמות', hebrewWithVowels: 'חָמִי/חָמוּת', french: 'Beau-père/mère' },
       { id: '21', hebrew: 'גיס', hebrewWithVowels: 'גִּיס', french: 'Beau-frère' },
       { id: '22', hebrew: 'גיסה', hebrewWithVowels: 'גִּיסָה', french: 'Belle-sœur' },
       { id: '23', hebrew: 'סמיך קרוב', hebrewWithVowels: 'סָמִיךְ קָרוֹב', french: 'Proche' },
@@ -367,3 +370,88 @@ export const vocabularyLists: VocabularyList[] = [
     ],
   },
 ];
+
+// PORTUGUESE VOCABULARY LISTS (Placeholder - to be populated later)
+export const vocabularyListsPortuguese: VocabularyList[] = [
+  {
+    id: 'maison',
+    name: 'Maison & Habitat',
+    description: 'Vocabulaire de la maison et aménagement intérieur',
+    words: [],
+  },
+  {
+    id: 'emotions',
+    name: 'Émotions & Sentiments',
+    description: 'Verbes et vocabulaire des émotions',
+    words: [],
+  },
+  {
+    id: 'family',
+    name: 'Famille & Relations',
+    description: 'Vocabulaire familial avancé',
+    words: [],
+  },
+  {
+    id: 'verbs',
+    name: 'Verbes Courants',
+    description: 'Verbes pratiques et fréquents',
+    words: [],
+  },
+  {
+    id: 'food',
+    name: 'Nourriture & Cuisine',
+    description: 'Aliments et vocabulaire culinaire',
+    words: [],
+  },
+  {
+    id: 'body',
+    name: 'Corps & Santé',
+    description: 'Parties du corps et vocabulaire médical',
+    words: [],
+  },
+  {
+    id: 'work',
+    name: 'Travail & Profession',
+    description: 'Vocabulaire professionnel',
+    words: [],
+  },
+  {
+    id: 'time',
+    name: 'Temps & Calendrier',
+    description: 'Jours, mois, saisons',
+    words: [],
+  },
+  {
+    id: 'nature',
+    name: 'Nature & Environnement',
+    description: 'Vocabulaire naturel et écologique',
+    words: [],
+  },
+  {
+    id: 'travel',
+    name: 'Voyage & Transport',
+    description: 'Vocabulaire de voyage',
+    words: [],
+  },
+  {
+    id: 'learning',
+    name: 'Apprentissage & Étude',
+    description: 'Vocabulaire scolaire et éducatif',
+    words: [],
+  },
+];
+
+// Helper function to get vocabulary lists by language
+export function getVocabularyListsByLanguage(language: string): VocabularyList[] {
+  switch (language.toLowerCase()) {
+    case 'hebrew':
+      return vocabularyListsHebrew;
+    case 'portuguese':
+      return vocabularyListsPortuguese;
+    default:
+      return [];
+  }
+}
+
+// Default export for backward compatibility
+export const vocabularyLists: VocabularyList[] = vocabularyListsHebrew;

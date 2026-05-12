@@ -1,10 +1,11 @@
 'use client';
 
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useState, useEffect, Suspense } from 'react';
-import { vocabularyLists } from '@/app/utils/vocabularyData';
+import { getVocabularyListsByLanguage } from '@/app/utils/vocabularyData';
 import { getAllVocabularyLists } from '@/app/utils/customLists';
+import { getToken } from '@/app/utils/auth';
 import HebrewKeyboard from '@/components/HebrewKeyboard';
 
 interface TestQuestion {
@@ -29,12 +30,21 @@ type TestMode = 'quick' | 'master' | null;
 type TestType = 'sample' | 'all' | null;
 
 function TestContent() {
+  const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
   const listId = params.id as string;
-  const profile = searchParams.get('profile') || 'User';
+  const languageProfileId = searchParams.get('languageProfileId');
+  const language = searchParams.get('language') || 'hebrew';
 
-  const allLists = getAllVocabularyLists(vocabularyLists);
+  useEffect(() => {
+    const token = getToken();
+    if (!token || !languageProfileId) {
+      router.push('/');
+    }
+  }, [languageProfileId, router]);
+
+  const allLists = getAllVocabularyLists(getVocabularyListsByLanguage(language));
   const list = allLists.find(l => l.id === listId);
   const [customWords, setCustomWords] = useState<CustomWord[]>([]);
   const [mode, setMode] = useState<TestMode>(null);
@@ -148,7 +158,7 @@ function TestContent() {
       <div className="min-h-screen bg-gradient-to-br from-emerald-100 to-emerald-200 p-4">
         <div className="max-w-2xl mx-auto text-center pt-12">
           <p className="text-emerald-700 text-xl">Liste non trouvée</p>
-          <Link href={`/?profile=${profile}`} className="text-emerald-600 hover:text-emerald-900 mt-4 block">
+          <Link href={`/?languageProfileId=${languageProfileId}`} className="text-emerald-600 hover:text-emerald-900 mt-4 block">
             ← Retour
           </Link>
         </div>
@@ -162,7 +172,7 @@ function TestContent() {
       <div className="min-h-screen bg-gradient-to-br from-emerald-100 to-emerald-200 p-4">
         <div className="max-w-2xl mx-auto">
           <Link
-            href={`/vocabulary/${listId}/study?profile=${profile}`}
+            href={`/vocabulary/${listId}/study?languageProfileId=${languageProfileId}`}
             className="text-emerald-700 mb-6 hover:text-emerald-900 font-semibold inline-block"
           >
             ← Retour
@@ -175,7 +185,7 @@ function TestContent() {
             {/* Quick Mode */}
             <button
               onClick={() => handleStartTest('quick')}
-              className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold p-6 rounded-lg transition mb-4"
+              className="w-full bg-gradient-to-r from-blue-300 to-blue-400 hover:from-blue-600 hover:to-blue-700 text-white font-bold p-6 rounded-lg transition mb-4"
             >
               <div className="text-2xl mb-2">⚡</div>
               <h2 className="text-xl font-bold mb-1">Mode Rapide (Quick)</h2>
@@ -186,7 +196,7 @@ function TestContent() {
             {/* Master Mode */}
             <button
               onClick={() => setTestType('sample')}
-              className="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold p-6 rounded-lg transition"
+              className="w-full bg-gradient-to-r from-violet-300 to-violet-400 hover:from-purple-600 hover:to-purple-700 text-white font-bold p-6 rounded-lg transition"
             >
               <div className="text-2xl mb-2">📚</div>
               <h2 className="text-xl font-bold mb-1">Mode Maître (Master)</h2>
@@ -291,7 +301,7 @@ function TestContent() {
       <div className="min-h-screen bg-gradient-to-br from-emerald-100 to-emerald-200 p-4">
         <div className="max-w-2xl mx-auto">
           <Link
-            href={`/vocabulary/${listId}/study?profile=${profile}`}
+            href={`/vocabulary/${listId}/study?languageProfileId=${languageProfileId}`}
             className="text-emerald-700 mb-6 hover:text-emerald-900 font-semibold inline-block"
           >
             ← Retour
@@ -323,7 +333,7 @@ function TestContent() {
                 Refaire le test
               </button>
               <Link
-                href={`/vocabulary/${listId}/study?profile=${profile}`}
+                href={`/vocabulary/${listId}/study?languageProfileId=${languageProfileId}`}
                 className="block bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 rounded-lg transition text-center"
               >
                 Retour à l'étude
@@ -339,7 +349,7 @@ function TestContent() {
     <div className="min-h-screen bg-gradient-to-br from-emerald-100 to-emerald-200 p-4">
       <div className="max-w-2xl mx-auto">
         <Link
-          href={`/vocabulary/${listId}/study?profile=${profile}`}
+          href={`/vocabulary/${listId}/study?languageProfileId=${languageProfileId}`}
           className="text-emerald-700 mb-6 hover:text-emerald-900 font-semibold inline-block"
         >
           ← Retour
@@ -481,7 +491,7 @@ function TestContent() {
             ) : (
               <button
                 onClick={handleNext}
-                className="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-lg transition"
+                className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg transition"
               >
                 {currentIndex === questions.length - 1
                   ? failedWords.length > 0

@@ -1,9 +1,10 @@
 'use client';
 
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useState, useEffect, Suspense } from 'react';
 import { conjugationLessons } from '@/app/utils/conjugationData';
+import { getToken } from '@/app/utils/auth';
 
 // Fonction pour parser et rendre le Markdown basique
 const renderMarkdownContent = (text: string) => {
@@ -29,19 +30,27 @@ const renderMarkdownContent = (text: string) => {
 };
 
 function ConjugationLessonContent() {
+  const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
   const lessonId = params.id as string;
-  const profile = searchParams.get('profile') || 'User';
+  const languageProfileId = searchParams.get('languageProfileId');
+
+  useEffect(() => {
+    const token = getToken();
+    if (!token || !languageProfileId) {
+      router.push('/');
+    }
+  }, [languageProfileId, router]);
 
   const lesson = conjugationLessons.find(l => l.id === lessonId);
 
   if (!lesson) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-500 to-purple-600 p-4">
+      <div className="min-h-screen bg-gradient-to-br from-violet-300 to-violet-400 p-4">
         <div className="max-w-2xl mx-auto text-center pt-12">
           <p className="text-white text-xl">Leçon non trouvée</p>
-          <Link href={`/conjugation?profile=${profile}`} className="text-purple-100 hover:text-white mt-4 block">
+          <Link href="/conjugation" className="text-purple-100 hover:text-white mt-4 block">
             ← Retour
           </Link>
         </div>
@@ -50,10 +59,10 @@ function ConjugationLessonContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-500 to-purple-600 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-violet-300 to-violet-400 p-4">
       <div className="max-w-4xl mx-auto">
         <Link
-          href={`/conjugation?profile=${profile}`}
+          href="/conjugation"
           className="text-white mb-6 hover:text-purple-100 font-semibold inline-block"
         >
           ← Retour
@@ -104,14 +113,14 @@ function ConjugationLessonContent() {
             <h2 className="text-xl font-bold text-purple-600 mb-6 text-center">Choisir un mode</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Link
-                href={`/conjugation/${lessonId}/test?profile=${profile}`}
+                href={`/conjugation/${lessonId}/test?languageProfileId=${languageProfileId}`}
                 className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-6 rounded-lg transition text-center block shadow-lg"
               >
                 <p className="text-lg">🎯 Quiz</p>
                 <p className="text-sm mt-2 opacity-90">Tester vos connaissances</p>
               </Link>
               <Link
-                href={`/conjugation/${lessonId}/exercises-list?profile=${profile}`}
+                href={`/conjugation/${lessonId}/exercises-list?languageProfileId=${languageProfileId}`}
                 className="bg-purple-400 hover:bg-purple-500 text-white font-bold py-6 rounded-lg transition text-center block shadow-lg"
               >
                 <p className="text-lg">✍️ Exercices</p>
@@ -129,7 +138,7 @@ export default function ConjugationLessonPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gradient-to-br from-purple-500 to-purple-600 p-4 flex items-center justify-center">
+        <div className="min-h-screen bg-gradient-to-br from-violet-300 to-violet-400 p-4 flex items-center justify-center">
           <p className="text-white text-xl">Chargement...</p>
         </div>
       }

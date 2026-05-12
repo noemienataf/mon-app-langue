@@ -1,9 +1,10 @@
 'use client';
 
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Suspense } from 'react';
+import { Suspense, useEffect } from 'react';
 import { grammarLessons } from '@/app/utils/grammarData';
+import { getToken } from '@/app/utils/auth';
 
 // Fonction pour parser et rendre le Markdown basique
 const renderMarkdownContent = (text: string) => {
@@ -29,19 +30,27 @@ const renderMarkdownContent = (text: string) => {
 };
 
 function GrammarLessonContent() {
+  const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
   const lessonId = params.id as string;
-  const profile = searchParams.get('profile') || 'User';
+  const languageProfileId = searchParams.get('languageProfileId');
+
+  useEffect(() => {
+    const token = getToken();
+    if (!token || !languageProfileId) {
+      router.push('/');
+    }
+  }, [languageProfileId, router]);
 
   const lesson = grammarLessons.find(l => l.id === lessonId);
 
   if (!lesson) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-500 to-blue-600 p-4">
+      <div className="min-h-screen bg-gradient-to-br from-blue-300 to-blue-400 p-4">
         <div className="max-w-2xl mx-auto text-center pt-12">
           <p className="text-white text-xl">Leçon non trouvée</p>
-          <Link href={`/grammar?profile=${profile}`} className="text-blue-100 hover:text-white mt-4 block">
+          <Link href="/grammar" className="text-blue-100 hover:text-white mt-4 block">
             ← Retour
           </Link>
         </div>
@@ -50,10 +59,10 @@ function GrammarLessonContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-500 to-blue-600 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-300 to-blue-400 p-4">
       <div className="max-w-4xl mx-auto">
         <Link
-          href={`/grammar?profile=${profile}`}
+          href="/grammar"
           className="text-white mb-6 hover:text-blue-100 font-semibold inline-block"
         >
           ← Retour
@@ -107,7 +116,7 @@ export default function GrammarLessonPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gradient-to-br from-blue-500 to-blue-600 p-4 flex items-center justify-center">
+        <div className="min-h-screen bg-gradient-to-br from-blue-300 to-blue-400 p-4 flex items-center justify-center">
           <p className="text-white text-xl">Chargement...</p>
         </div>
       }

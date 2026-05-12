@@ -1,19 +1,61 @@
-import { supabase } from '@/app/utils/supabaseClient';
+import { supabaseAdmin } from '@/app/utils/supabaseServer';
 import { NextRequest, NextResponse } from 'next/server';
+import jwt from 'jsonwebtoken';
 
-// GET exercices maîtrisés pour un profil
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+
+// Extraire le userId du JWT token
+function getUserIdFromRequest(request: NextRequest): string | null {
+  const authHeader = request.headers.get('Authorization');
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return null;
+  }
+
+  try {
+    const token = authHeader.slice(7);
+    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
+    return decoded.userId;
+  } catch {
+    return null;
+  }
+}
+
+// Vérifier que l'utilisateur possède le language_profile
+async function verifyLanguageProfileOwnership(
+  userId: string,
+  languageProfileId: string
+): Promise<boolean> {
+  const { data, error } = await supabaseAdmin
+    .from('language_profiles')
+    .select('id')
+    .eq('id', languageProfileId)
+    .eq('user_id', userId)
+    .single();
+
+  return !!data && !error;
+}
+
+// GET exercices maîtrisés pour un profil de langue
 export async function GET(request: NextRequest) {
   try {
-    const profileId = request.nextUrl.searchParams.get('profileId');
+    const userId = getUserIdFromRequest(request);
+    const languageProfileId = request.nextUrl.searchParams.get('languageProfileId');
 
-    if (!profileId) {
-      return NextResponse.json({ error: 'Profile ID is required' }, { status: 400 });
+    if (!userId || !languageProfileId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { data, error } = await supabase
+    // Vérifier que l'utilisateur possède ce language_profile
+    const isOwner = await verifyLanguageProfileOwnership(userId, languageProfileId);
+    if (!isOwner) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    const { data, error } = await supabaseAdmin
       .from('mastery_exercises')
       .select('exercise_id')
-      .eq('profile_id', profileId);
+      .eq('language_profile_id', languageProfileId);
 
     if (error) throw error;
 
@@ -26,15 +68,27 @@ export async function GET(request: NextRequest) {
 // POST marquer un exercice comme maîtrisé
 export async function POST(request: NextRequest) {
   try {
-    const { profileId, exerciseId } = await request.json();
+    const userId = getUserIdFromRequest(request);
 
-    if (!profileId || !exerciseId) {
-      return NextResponse.json({ error: 'Profile ID and Exercise ID are required' }, { status: 400 });
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { data, error } = await supabase
+    const { languageProfileId, exerciseId } = await request.json();
+
+    if (!languageProfileId || !exerciseId) {
+      return NextResponse.json({ error: 'Language Profile ID and Exercise ID are required' }, { status: 400 });
+    }
+
+    // Vérifier que l'utilisateur possède ce language_profile
+    const isOwner = await verifyLanguageProfileOwnership(userId, languageProfileId);
+    if (!isOwner) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    const { data, error } = await supabaseAdmin
       .from('mastery_exercises')
-      .insert([{ profile_id: profileId, exercise_id: exerciseId }])
+      .insert([{ language_profile_id: languageProfileId, exercise_id: exerciseId }])
       .select();
 
     if (error) throw error;
@@ -48,16 +102,28 @@ export async function POST(request: NextRequest) {
 // DELETE retirer un exercice maîtrisé
 export async function DELETE(request: NextRequest) {
   try {
-    const { profileId, exerciseId } = await request.json();
+    const userId = getUserIdFromRequest(request);
 
-    if (!profileId || !exerciseId) {
-      return NextResponse.json({ error: 'Profile ID and Exercise ID are required' }, { status: 400 });
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { error } = await supabase
+    const { languageProfileId, exerciseId } = await request.json();
+
+    if (!languageProfileId || !exerciseId) {
+      return NextResponse.json({ error: 'Language Profile ID and Exercise ID are required' }, { status: 400 });
+    }
+
+    // Vérifier que l'utilisateur possède ce language_profile
+    const isOwner = await verifyLanguageProfileOwnership(userId, languageProfileId);
+    if (!isOwner) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    const { error } = await supabaseAdmin
       .from('mastery_exercises')
       .delete()
-      .eq('profile_id', profileId)
+      .eq('language_profile_id', languageProfileId)
       .eq('exercise_id', exerciseId);
 
     if (error) throw error;

@@ -1,39 +1,18 @@
-import { supabase } from '@/app/utils/supabaseClient';
 import { NextRequest, NextResponse } from 'next/server';
+import jwt from 'jsonwebtoken';
 
-// GET tous les profils
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+
+// Langues disponibles
+const AVAILABLE_LANGUAGES = [
+  { code: 'hebrew', name: 'Hébreu', flag: '🇮🇱' },
+  { code: 'portuguese', name: 'Portugais', flag: '🇧🇷' },
+];
+
+// GET - Liste des langues disponibles
 export async function GET() {
   try {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) throw error;
-
-    return NextResponse.json(data);
-  } catch (error) {
-    return NextResponse.json({ error: (error as Error).message }, { status: 500 });
-  }
-}
-
-// POST créer un nouveau profil
-export async function POST(request: NextRequest) {
-  try {
-    const { name } = await request.json();
-
-    if (!name || !name.trim()) {
-      return NextResponse.json({ error: 'Profile name is required' }, { status: 400 });
-    }
-
-    const { data, error } = await supabase
-      .from('profiles')
-      .insert([{ name: name.trim() }])
-      .select();
-
-    if (error) throw error;
-
-    return NextResponse.json(data[0], { status: 201 });
+    return NextResponse.json(AVAILABLE_LANGUAGES);
   } catch (error) {
     return NextResponse.json({ error: (error as Error).message }, { status: 500 });
   }
