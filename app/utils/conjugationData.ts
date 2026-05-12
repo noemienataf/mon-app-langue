@@ -26,7 +26,7 @@ export const conjugationLessons: ConjugationLesson[] = [
   {
     id: 'present-tense',
     title: 'Conjugaison au Présent',
-    description: 'Apprendre à conjuguer les verbes au temps présent (Hové)',
+    description: 'Conjuguer au présent (Hové)',
     explanation: "Le présent en hébreu (Hové) s'utilise pour parler des actions qui se déroulent maintenant. Les verbes réguliers au présent changent selon le sujet (personne et genre).\n\n**Structure générale**: Le verbe change sa forme selon qui l'effectue:\n- 1ère personne singulier/pluriel\n- 2ème personne singulier/pluriel (avec distinction masculin/féminin)\n- 3ème personne singulier/pluriel (avec distinction masculin/féminin)\n\n**Exemple avec \"étudier\" (limad)**: Les formes changent complètement pour chaque personne, ce qui est différent du français.",
     examples: [
       {
@@ -112,7 +112,7 @@ export const conjugationLessons: ConjugationLesson[] = [
   {
     id: 'past-tense',
     title: 'Conjugaison au Passé',
-    description: 'Apprendre à conjuguer les verbes au temps passé (Avar)',
+    description: 'Conjuguer au passé (Avar)',
     explanation: "Le passé en hébreu (Avar) s'utilise pour parler des actions qui sont déjà terminées. La conjugaison au passé est généralement plus régulière que celle du présent.\n\n**Caractéristiques du passé**:\n- Les suffixes s'ajoutent à la racine du verbe\n- Le passé change selon la personne et le genre\n- Pour les verbes réguliers, on ajoute des suffixes standardisés\n\n**Exemple avec \"parler\" (diber)**: La racine \"d-b-r\" reçoit des suffixes selon le sujet.",
     examples: [
       {
@@ -198,7 +198,7 @@ export const conjugationLessons: ConjugationLesson[] = [
   {
     id: 'future-tense',
     title: 'Conjugaison au Futur',
-    description: 'Apprendre à conjuguer les verbes au temps futur (Atid)',
+    description: 'Conjuguer au futur (Atid)',
     explanation: "Le futur en hébreu (Atid) s'utilise pour parler des actions qui n'ont pas encore eu lieu.\n\n**Caractéristiques du futur**:\n- Utilise des préfixes (prépositions attachées au verbe)\n- Change selon la personne et le genre\n- Les formes sont souvent différentes du présent\n\n**Préfixes du futur**:\n- י (y) pour 3ème personne masculine\n- ת (t) pour 2ème personne et 3ème personne féminine\n- א (a) pour 1ère personne\n- נ (n) pour 1ère personne pluriel",
     examples: [
       {
