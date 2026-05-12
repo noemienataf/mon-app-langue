@@ -77,9 +77,9 @@ function TestContent() {
       // Mode Quick: choix multiples
       const newQuestions: TestQuestion[] = wordsToUse.slice(0, 10).map((word) => {
         const isHebrew = Math.random() > 0.5;
-        const question = isHebrew ? word.hebrew : word.french;
+        const question = (isHebrew ? word.hebrew : word.french) || '';
         const wordWithVowels = isHebrew && (word as any).hebrewWithVowels ? (word as any).hebrewWithVowels : undefined;
-        const answer = isHebrew ? word.french : word.hebrew;
+        const answer = (isHebrew ? word.french : word.hebrew) || '';
         const answerWithVowels = !isHebrew && (word as any).hebrewWithVowels ? (word as any).hebrewWithVowels : undefined;
 
         // Générer 3 mauvaises réponses
@@ -87,7 +87,7 @@ function TestContent() {
         const wrongAnswers = otherWords
           .sort(() => Math.random() - 0.5)
           .slice(0, 3)
-          .map(w => (isHebrew ? w.french : w.hebrew));
+          .map(w => (isHebrew ? (w.french || '') : (w.hebrew || '')));
 
         const options = [answer, ...wrongAnswers].sort(() => Math.random() - 0.5);
 
@@ -110,9 +110,9 @@ function TestContent() {
         const isHebrew = index % 2 === 0;
         return {
           wordId: word.id,
-          word: isHebrew ? word.hebrew : word.french,
+          word: (isHebrew ? word.hebrew : word.french) || '',
           wordWithVowels: isHebrew && (word as any).hebrewWithVowels ? (word as any).hebrewWithVowels : undefined,
-          answer: isHebrew ? word.french : word.hebrew,
+          answer: (isHebrew ? word.french : word.hebrew) || '',
           answerWithVowels: !isHebrew && (word as any).hebrewWithVowels ? (word as any).hebrewWithVowels : undefined,
           type: isHebrew ? 'hebrew-to-french' : 'french-to-hebrew',
           correct: null,
