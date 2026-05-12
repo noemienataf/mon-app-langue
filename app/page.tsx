@@ -321,7 +321,7 @@ export default function Home() {
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
             <button
               onClick={() => handleSelectCategory('vocabulary')}
               className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl shadow-md hover:shadow-xl hover:scale-105 transition text-center p-8 border-2 border-emerald-200 hover:border-emerald-400"
@@ -348,6 +348,15 @@ export default function Home() {
               <h2 className="text-2xl font-bold text-purple-700 mb-2">Conjugaison</h2>
               <p className="text-purple-600">Apprends à conjuguer les verbes</p>
             </Link>
+
+            <button
+              onClick={() => handleSelectCategory('reading')}
+              className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl shadow-md hover:shadow-xl hover:scale-105 transition text-center p-8 border-2 border-orange-200 hover:border-orange-400"
+            >
+              <div className="text-5xl mb-4">📖</div>
+              <h2 className="text-2xl font-bold text-orange-700 mb-2">Contenu à lire</h2>
+              <p className="text-orange-600">Lis des articles et histoires</p>
+            </button>
           </div>
         </div>
       </div>
