@@ -4,15 +4,21 @@ import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
+interface JwtTokenPayload {
+  id?: string;
+  email?: string;
+  [key: string]: any;
+}
+
 export async function GET(request: NextRequest) {
   try {
     const authHeader = request.headers.get('Authorization');
     const token = authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null;
 
-    let decodedToken = null;
+    let decodedToken: JwtTokenPayload | null = null;
     if (token) {
       try {
-        decodedToken = jwt.verify(token, JWT_SECRET);
+        decodedToken = jwt.verify(token, JWT_SECRET) as JwtTokenPayload;
       } catch (e) {
         decodedToken = { error: 'Invalid token' };
       }
