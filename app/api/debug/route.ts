@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
       try {
         decodedToken = jwt.verify(token, JWT_SECRET) as JwtTokenPayload;
       } catch (e) {
-        decodedToken = { error: 'Invalid token' };
+        decodedToken = { error: 'Invalid token' } as JwtTokenPayload;
       }
     }
 
