@@ -6,6 +6,7 @@ export interface PodcastEpisode {
   hebrew: string;
   french: string;
   spotifyEpisodeId: string;
+  spotifyLink: string;
   language: string;
   duration: string;
 }
@@ -97,6 +98,7 @@ Pour cette raison, je vous encourage à écouter non seulement ce podcast, mais 
 
 Si la théorie de Stephen Krashen vous intéresse, je vais laisser un lien pour plus d'informations à ce sujet en anglais. En plus, il se peut que dans les épisodes suivants, je vous en parle plus en détail. C'est tout pour cet épisode. Si vous avez des questions, des demandes ou des idées pour le podcast, vous pouvez me contacter via le site Internet du podcast. J'espère que vous avez aimé cet épisode et on se reparle la prochaine fois. À bientôt !`,
     spotifyEpisodeId: '5bo1jbf7Hp28CbMeAZP9rY',
+    spotifyLink: 'https://open.spotify.com/episode/5bo1jbf7Hp28CbMeAZP9rY?si=c9247e87256a439c',
     language: 'hebrew',
     duration: '10 min'
   }

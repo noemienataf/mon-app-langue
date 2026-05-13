@@ -68,7 +68,7 @@ export default function PodcastDetail({ id }: PodcastDetailProps) {
             <div className="mb-8">
               <h3 className="text-lg font-semibold text-gray-700 mb-4">Écoutez l'épisode</h3>
               <a
-                href={`https://open.spotify.com/episode/${episode.spotifyEpisodeId}`}
+                href={episode.spotifyLink}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block bg-gradient-to-r from-green-400 to-green-500 rounded-xl p-6 hover:shadow-lg transition group"
