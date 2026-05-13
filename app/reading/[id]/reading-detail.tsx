@@ -1,18 +1,31 @@
 'use client';
 
-import { Suspense } from 'react';
-import { use } from 'react';
-import ReadingDetail from './reading-detail';
+import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import { readingTexts } from '../../utils/readingTextsData';
+import { getToken } from '../../utils/auth';
+import { useEffect } from 'react';
 
-export default function ReadingDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
-
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center"><p className="text-orange-700">Chargement...</p></div>}>
-      <ReadingDetail id={id} />
-    </Suspense>
-  );
+interface ReadingDetailProps {
+  id: string;
 }
+
+export default function ReadingDetail({ id }: ReadingDetailProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const languageProfileId = searchParams.get('languageProfileId');
+  const language = searchParams.get('language');
+
+  useEffect(() => {
+    // Vérifier l'authentification
+    const token = getToken();
+    if (!token) {
+      router.push('/auth/login');
+      return;
+    }
+  }, [router]);
+
+  const text = readingTexts.find((t) => t.id === id);
 
   if (!text) {
     return (
