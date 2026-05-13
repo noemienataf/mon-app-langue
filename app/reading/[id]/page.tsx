@@ -5,12 +5,14 @@ import Link from 'next/link';
 import { readingTexts } from '../../utils/readingTextsData';
 import { getToken } from '../../utils/auth';
 import { useEffect } from 'react';
+import { use } from 'react';
 
-export default function ReadingDetailPage({ params }: { params: { id: string } }) {
+export default function ReadingDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const languageProfileId = searchParams.get('languageProfileId');
   const language = searchParams.get('language');
+  const { id } = use(params);
 
   useEffect(() => {
     // Vérifier l'authentification
@@ -21,7 +23,7 @@ export default function ReadingDetailPage({ params }: { params: { id: string } }
     }
   }, [router]);
 
-  const text = readingTexts.find((t) => t.id === params.id);
+  const text = readingTexts.find((t) => t.id === id);
 
   if (!text) {
     return (
