@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { podcastEpisodes } from '../../utils/podcastData';
 import { getToken } from '../../utils/auth';
 import { useEffect } from 'react';
-import Script from 'next/script';
 
 interface PodcastDetailProps {
   id: string;
@@ -65,18 +64,29 @@ export default function PodcastDetail({ id }: PodcastDetailProps) {
               <p className="text-red-600 text-sm">{episode.duration}</p>
             </div>
 
-            {/* Spotify Player Embed */}
+            {/* Spotify Player Link */}
             <div className="mb-8">
               <h3 className="text-lg font-semibold text-gray-700 mb-4">Écoutez l'épisode</h3>
-              <iframe
-                style={{ borderRadius: '12px' }}
-                src={`https://open.spotify.com/embed/episode/${episode.spotifyEpisodeId}?utm_source=generator`}
-                width="100%"
-                height="352"
-                frameBorder="0"
-                allowFullScreen={true}
-                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-              ></iframe>
+              <a
+                href={`https://open.spotify.com/episode/${episode.spotifyEpisodeId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block bg-gradient-to-r from-green-400 to-green-500 rounded-xl p-6 hover:shadow-lg transition group"
+              >
+                <div className="flex items-center gap-6">
+                  <div className="flex-shrink-0 bg-white rounded-lg p-3 group-hover:scale-105 transition">
+                    <div className="text-3xl">🎧</div>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-white text-sm font-semibold mb-1">Hebrew Time Podcast</p>
+                    <p className="text-green-50 text-sm mb-2">{episode.title}</p>
+                    <p className="text-green-50 text-xs flex items-center gap-2">
+                      <span>⏱️ {episode.duration}</span>
+                      <span className="ml-auto font-semibold">Écouter sur Spotify →</span>
+                    </p>
+                  </div>
+                </div>
+              </a>
             </div>
 
             {/* Texte hébreu */}
@@ -100,7 +110,6 @@ export default function PodcastDetail({ id }: PodcastDetailProps) {
           </div>
         </div>
       </div>
-      <Script src="https://open.spotify.com/embed-podcast/iframe-api/v1" async />
     </>
   );
 }
