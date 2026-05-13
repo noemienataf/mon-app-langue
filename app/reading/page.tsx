@@ -40,35 +40,20 @@ export default function ReadingPage() {
           <div className="w-20"></div>
         </div>
 
-        {/* Textes */}
-        <div className="space-y-8">
+        {/* Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {texts.map((text) => (
-            <div
+            <Link
               key={text.id}
-              className="bg-white rounded-xl shadow-lg p-8 border-2 border-orange-200"
+              href={`/reading/${text.id}?languageProfileId=${languageProfileId}&language=${language}`}
+              className="bg-white rounded-xl shadow-md hover:shadow-lg hover:scale-105 transition block p-6 border-2 border-orange-200 hover:border-orange-400"
             >
-              {/* Titre et thème */}
-              <div className="mb-8 pb-4 border-b-2 border-orange-100">
-                <h2 className="text-2xl font-bold text-orange-800 mb-2">{text.title}</h2>
-                <p className="text-orange-600 text-sm">Thème: {text.theme}</p>
+              <div className="h-full flex flex-col">
+                <h3 className="text-lg font-bold text-orange-800 mb-3">{text.title}</h3>
+                <p className="text-orange-600 text-sm mb-4 flex-1">{text.theme}</p>
+                <p className="text-gray-500 text-xs font-semibold">Cliquez pour lire</p>
               </div>
-
-              {/* Texte hébreu */}
-              <div className="mb-8">
-                <h3 className="text-lg font-semibold text-gray-700 mb-4">עברית</h3>
-                <p className="text-right text-gray-800 leading-relaxed whitespace-pre-wrap" style={{ direction: 'rtl' }}>
-                  {text.hebrew}
-                </p>
-              </div>
-
-              {/* Texte français */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-700 mb-4">Français</h3>
-                <p className="text-left text-gray-800 leading-relaxed whitespace-pre-wrap">
-                  {text.french}
-                </p>
-              </div>
-            </div>
+            </Link>
           ))}
         </div>
 
