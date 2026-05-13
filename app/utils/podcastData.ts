@@ -104,6 +104,56 @@ Si la théorie de Stephen Krashen vous intéresse, je vais laisser un lien pour 
   }
 ];
 
+  {
+    id: 'episode-02',
+    episodeNumber: 2,
+    title: 'Comment la crise du coronavirus a changé ma vie',
+    description: 'Nadya raconte comment la pandémie de COVID-19 a transformé son parcours professionnel et l\'a inspirée à devenir professeur d\'hébreu.',
+    hebrew: `שלום לכולם, וברוכים הבאים לפרק השני של הפודקאסט זמן עברית, פודקאסט לתלמידי עברית ברמה בינונית. לי קוראים נדיה, ובפרק הזה אני אספר לכם איך משבר הקורונה השפיע על החיים שלי. מוכנים? בואו נתחיל!
+
+אז כמו שכולכם יודעים כמובן, השנה הזאת שינתה להרבה מאוד אנשים את התכניות לעתיד. כשאני אומרת שנה, אני מתכוונת ממרץ של שנת 2020. אז, בתחילת מרץ, התחילו בישראל לדבר על נגיף הקורונה. נגיף, זו המילה העברית לוירוס. מהר מאוד אנשים הבינו שזה משהו רציני ומסוכן ומקומות עבודה התחילו להיסגר. בהתחלה נסגרו המלונות, אחר כך המסעדות ובסוף החנויות, בתי הספר והמשרדים.
+
+הרבה מאוד אנשים הפסיקו לעבוד וכולם נכנסו לסגר. סגר זה המצב שבו אנשים צריכים לשבת בבית ואסור להם לצאת החוצה, חוץ מאשר לקניות בסופר או טיול קצר עם הכלב. בעקבות זאת, הרבה אנשים נאלצו להתחיל לחיות בצורה אחרת. הרבה אנשים התחילו לחשוב מחדש על החיים שלהם, לזנוח תכניות ישנות ולחשוב על דברים חדשים שהם יכולים לעשות. וזה מה שקרה גם במקרה שלי.
+
+בשנים שלפני הקורונה, למדתי באוניברסיטה. עשיתי תואר ראשון, זאת אומרת B.A. תואר ראשון נקרא ככה כי זה הדבר הראשון שאפשר ללמוד באוניברסיטה. אני למדתי ריפוי בעיסוק. ריפוי בעיסוק הוא מקצוע טיפולי, זאת אומרת שמרפאה בעיסוק עובדת עם אנשים שיש להם בעיה כלשהי. המטרה של הטיפול היא לעזור לאדם עם הבעיה לעשות דברים שחשובים לו בחיים. זה יכול להיות משהו פיזי או משהו מנטלי. לדוגמא: אם יש אישה מובגרת שנפלה ושברה את הרגל, אז המרפאה בעיסוק תעזור לה להבין איך הכי טוב להתלבש או להתקלח. היא תבדוק ביחד עם האישה מה היא יכולה לעשות ומה קשה לה ואיך אפשר לעזור לה. זו הגרסה העברית למקצוע "occupational therapy". כשלמדתי באוניברסיטה חשבתי שזה יהיה המקצוע שבו אעבוד אחרי סיום הלימודים.
+
+חוץ מזה בישראל, רוב הסטודנטים עובדים בזמן הלימודים שלהם כדי לממן את החיים שלהם: זאת אומרת לשלם על דירה, על אוכל, על כל ההוצאות היום-יומיות. אז בזמן הלימודים אני עבדתי בבית מלון. בית מלון הוא המקום שבו אנשים ישנים כשהם יוצאים לחופשה בעיר או במדינה אחרת. כאשר רוב האנשים שומעים את המילה מלון הם מדמיינים בניין גדול עם הרבה מאוד חדרים, חדר אוכל גדול והרבה עובדים. אבל המלון שאני עבדתי בו היה מלון בוטיק, כלומר, מלון קטן. במלון הזה היו בערך שלושים חדרים. אני עבדתי בקבלה, שזה המקום בכניסה למלון שבו מקבלים את המפתח לחדר.
+
+אחרי שסיימתי את הלימודים בפברואר 2020, החלטתי להמשיך לעבוד קצת במלון, אבל זה לא נמשך הרבה זמן: בערך חודש לאחר מכן הגיעה הקורונה. המלון נסגר באופן זמני, ואני נשארתי בבית. בחודשים הראשונים, כמו רוב האנשים, חיכיתי שהתקופה הזמנית תסתיים ויהיה אפשרי לחזור לעבודה. אבל כמו שאתם יודעים, המצב לא השתפר בהרבה מאז. המלון שעבדתי בו לא נפתח עד היום.
+
+בזמן שישבתי בבית עשיתי הרבה דברים נחמדים: קראתי, ראיתי סרטים וגם המשכתי ללמוד גרמנית וצרפתית. במהלך הזמן הזה הכרתי אתר שנקרא italki. זה אתר שיש בו תלמידים ומורים לשפות שונות. התלמידים יכולים להזמין שיעור אונליין עם אחד המורים. הרבה אנשים משתמשים באתר הזה כדי לתרגל שיחה: זאת אומרת הם פשוט מדברים עם המורים שלהם על דברים שמעניינים אותם. המורים מקשיבים, מתקנים טעויות ועוזרים לתלמידים שלהם לדבר טוב יותר. אז בזמן הסגר התחלתי לקחת שיעורים ב Italki וזה היה מצוין. לכן, אחרי תקופה מסויימת החלטתי לנסות בעצמי לעבוד בתור מורה לעברית ב-italki, וזה מה שאני עושה עד היום.
+
+זו אחת הסיבות שהתחלתי לעשות את הפודקאסט הזה. בתור מורה, ראיתי איך לסטודנטים שלי אין מספיק מקורות טובים ללמוד מהם. רוב חומרי הלימוד כתובים בשפה מיושנת, שלא רלוונטית לעברית מודרנית, ומשתמשים בשיטות לא מספיק מעניינות להוראה. מצד שני, המדיה הישראלית, שבה מדברים בעברית עכשווית, היא קשה מדי להבנה לתלמידי עברית ברמה בינונית. ראיתי גם שאין הרבה פודקאסטים או סרטונים שמתאימים לתלמידים האלה, שרוצים לשפר את ההבנה שלהם, אז החלטתי לנסות לעשות משהו כזה בעצמי.
+
+אז, כמו שסיפרתי לכם בהתחלה, לפני משבר הקורונה למדתי ריפוי בעיסוק ועבדתי במלון. בתקופה הזאת, חשבתי שזה מה שאמשיך לעשות גם בשנים הבאות. עכשיו אני כבר לא כל כך בטוחה בזה. גיליתי שאני מאוד נהנית ללמד אנשים עברית ובינתיים אני רוצה להמשיך לעשות את זה.
+
+ומה לגביכם? איך הקורונה שינתה את החיים שלכם? אני מזמינה אתכם לכתוב את הסיפור שלכם ולשלוח לי אותו דרך אתר האינטרנט של הפודקאסט. הלינק לאתר האינטרנט נמצא בתיאור של הפרק. זה הכל לפרק הזה. תודה רבה שהקשבתם, ונשתמע בפעם הבאה. יאללה ביי!`,
+    french: `Bonjour à tous, et bienvenue au deuxième épisode du podcast Hebrew Time, un podcast pour les étudiants en hébreu de niveau intermédiaire. Je m'appelle Nadya, et dans cet épisode, je vais vous parler de comment la crise du coronavirus a affecté ma vie. Vous êtes prêts ? Allons-y !
+
+Alors, comme vous le savez bien sûr, cette année a changé les plans pour beaucoup de gens. Quand je dis « cette année », je veux dire depuis mars 2020. Donc, au début de mars, on a commencé à parler en Israël du virus du coronavirus. Un virus, c'est le mot hébreu pour virus. Très rapidement, les gens ont compris que c'était quelque chose de grave et de dangereux, et les lieux de travail ont commencé à fermer. D'abord, les hôtels ont fermé, puis les restaurants, et finalement les magasins, les écoles et les bureaux.
+
+Beaucoup de gens ont arrêté de travailler et tout le monde est entré en confinement. Le confinement, c'est la situation où les gens doivent rester à la maison et n'ont pas le droit de sortir, sauf pour faire des courses au supermarché ou une courte promenade avec le chien. En conséquence, beaucoup de gens ont dû commencer à vivre différemment. Beaucoup de gens ont commencé à repenser leur vie, à abandonner les anciens plans et à penser à de nouvelles choses qu'ils pourraient faire. Et c'est ce qui m'est aussi arrivé.
+
+Dans les années avant le coronavirus, j'étudiais à l'université. J'ai obtenu un diplôme de premier cycle, c'est-à-dire un B.A. Un diplôme de premier cycle s'appelle comme ça parce que c'est la première chose qu'on peut étudier à l'université. J'ai étudié l'ergothérapie. L'ergothérapie est une profession thérapeutique, c'est-à-dire qu'un ergothérapeute travaille avec des gens qui ont un problème quelconque. L'objectif du traitement est d'aider la personne avec le problème à faire des choses qui sont importantes pour elle dans sa vie. Cela peut être quelque chose de physique ou quelque chose de mental. Par exemple : si une femme adulte tombe et se casse la jambe, alors l'ergothérapeute l'aidera à comprendre comment mieux s'habiller ou prendre une douche. Elle vérifierait avec la femme ce qu'elle peut faire et ce qui est difficile pour elle, et comment on peut l'aider. C'est la version française de la profession « occupational therapy ». Quand j'étudiais à l'université, je pensais que ce serait la profession dans laquelle je travaillerais après mes études.
+
+De plus, en Israël, la plupart des étudiants travaillent pendant leurs études pour financer leur vie : c'est-à-dire payer un appartement, de la nourriture, toutes les dépenses quotidiennes. Alors pendant mes études, j'ai travaillé dans un hôtel. Un hôtel est l'endroit où les gens dorment quand ils sortent en vacances dans une autre ville ou un autre pays. Quand la plupart des gens entendent le mot hôtel, ils imaginent un grand bâtiment avec beaucoup de chambres, une grande salle à manger et beaucoup d'employés. Mais l'hôtel où j'ai travaillé était un hôtel-boutique, c'est-à-dire un petit hôtel. Cet hôtel avait environ trente chambres. J'ai travaillé à la réception, c'est l'endroit à l'entrée de l'hôtel où on reçoit la clé de la chambre.
+
+Après avoir terminé mes études en février 2020, j'ai décidé de continuer à travailler un peu à l'hôtel, mais cela n'a pas duré longtemps : environ un mois plus tard, le coronavirus est arrivé. L'hôtel a fermé temporairement, et je me suis retrouvée à la maison. Au cours des premiers mois, comme la plupart des gens, j'attendais que la période temporaire se termine et qu'il soit possible de retourner au travail. Mais comme vous le savez, la situation ne s'est pas beaucoup améliorée depuis. L'hôtel où j'ai travaillé n'a pas rouvert jusqu'à aujourd'hui.
+
+Pendant que j'étais à la maison, j'ai fait beaucoup de choses sympas : j'ai lu, regardé des films et j'ai aussi continué à apprendre l'allemand et le français. Pendant cette période, j'ai découvert un site appelé Italki. C'est un site où il y a des étudiants et des professeurs pour différentes langues. Les étudiants peuvent réserver une leçon en ligne avec l'un des professeurs. Beaucoup de gens utilisent ce site pour pratiquer la conversation : c'est-à-dire qu'ils parlent simplement avec leurs professeurs de choses qui les intéressent. Les professeurs écoutent, corrigent les erreurs et aident leurs étudiants à mieux parler. Donc pendant le confinement, j'ai commencé à prendre des cours sur Italki et c'était excellent. Par conséquent, après une certaine période, j'ai décidé d'essayer moi-même de travailler comme professeur d'hébreu sur Italki, et c'est ce que je fais jusqu'à aujourd'hui.
+
+C'est l'une des raisons pour lesquelles j'ai commencé à faire ce podcast. En tant que professeur, j'ai vu comment mes étudiants n'avaient pas assez de bonnes ressources pour apprendre. La plupart du matériel d'enseignement est écrit dans une langue dépassée, qui n'est pas pertinente pour l'hébreu moderne, et utilise des méthodes insuffisamment intéressantes pour l'enseignement. D'un autre côté, les médias israéliens, où on parle l'hébreu contemporain, sont trop difficiles à comprendre pour les étudiants en hébreu de niveau intermédiaire. J'ai aussi vu qu'il n'y a pas beaucoup de podcasts ou de vidéos qui conviennent à ces étudiants, qui veulent améliorer leur compréhension, alors j'ai décidé d'essayer de faire quelque chose comme ça moi-même.
+
+Donc, comme je vous l'ai raconté au début, avant la crise du coronavirus, j'étudiais l'ergothérapie et je travaillais dans un hôtel. Pendant cette période, je pensais que c'est ce que je continuerais à faire au cours des années suivantes. Maintenant, je ne suis plus si sûre de cela. J'ai découvert que j'aime beaucoup enseigner l'hébreu aux gens et pour l'instant, je veux continuer à le faire.
+
+Et vous ? Comment le coronavirus a-t-il changé votre vie ? Je vous invite à écrire votre histoire et à me l'envoyer via le site Internet du podcast. Le lien vers le site Internet se trouve dans la description de l'épisode. C'est tout pour cet épisode. Merci beaucoup de m'avoir écoutée, et on se reparle la prochaine fois. À bientôt !`,
+    spotifyEpisodeId: '3vkPFd0kcxNHizl3q34JKV',
+    spotifyLink: 'https://open.spotify.com/episode/3vkPFd0kcxNHizl3q34JKV?si=1bb5a99f06f44eb3',
+    language: 'hebrew',
+    duration: '18 min'
+  }
+];
+
 export const getPodcastsByLanguage = (language: string): PodcastEpisode[] => {
   return podcastEpisodes.filter((episode) => episode.language === language);
 };
