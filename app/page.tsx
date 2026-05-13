@@ -321,7 +321,7 @@ export default function Home() {
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mt-12">
             <button
               onClick={() => handleSelectCategory('vocabulary')}
               className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl shadow-md hover:shadow-xl hover:scale-105 transition text-center p-8 border-2 border-emerald-200 hover:border-emerald-400"
@@ -356,6 +356,15 @@ export default function Home() {
               <div className="text-5xl mb-4">📖</div>
               <h2 className="text-2xl font-bold text-orange-700 mb-2">Contenu à lire</h2>
               <p className="text-orange-600">Lis des articles et histoires</p>
+            </Link>
+
+            <Link
+              href={`/podcasts?languageProfileId=${currentLanguageProfile?.id}&language=${currentLanguageProfile?.language}`}
+              className="bg-gradient-to-br from-red-50 to-red-100 rounded-xl shadow-md hover:shadow-xl hover:scale-105 transition text-center p-8 border-2 border-red-200 hover:border-red-400"
+            >
+              <div className="text-5xl mb-4">🎙️</div>
+              <h2 className="text-2xl font-bold text-red-700 mb-2">Contenu audio</h2>
+              <p className="text-red-600">Écoute des podcasts en hébreu</p>
             </Link>
           </div>
         </div>
